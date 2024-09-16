@@ -1,12 +1,13 @@
-import type { Config } from "tailwindcss"
+import { table } from "console";
+import type { Config } from "tailwindcss";
 
 const config = {
   darkMode: ["class"],
   content: [
-    './pages/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}',
-    './src/**/*.{ts,tsx}',
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
   ],
   prefix: "",
   theme: {
@@ -22,6 +23,8 @@ const config = {
         border: "hsla(var(--border))",
         input: "hsla(var(--input))",
         ring: "hsla(var(--ring))",
+        headerTable: "hsla(var(--headerTable))",
+
         background: "hsla(var(--background))",
         foreground: "hsla(var(--foreground))",
         primary: {
@@ -74,7 +77,7 @@ const config = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
-} satisfies Config
+  plugins: [require("tailwindcss-animate"), require("tailwind-scrollbar")],
+} satisfies Config;
 
-export default config
+export default config;
