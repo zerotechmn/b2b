@@ -1,5 +1,6 @@
 import {
   integer,
+  PgEnum,
   pgEnum,
   pgTable,
   text,
@@ -24,10 +25,12 @@ export const vendor = pgTable("vendor", {
 });
 
 export const vendorRelations = relations(vendor, ({ one }) => ({
+  contracts: one(contract),
   address: one(address, {
     fields: [vendor.addressId],
     references: [address.id],
   }),
+  wallet: one(wallet),
 }));
 
 export const wallet = pgTable("wallet", {
@@ -54,6 +57,7 @@ export const contract = pgTable("contract", {
 });
 
 export const contractRelations = relations(contract, ({ one }) => ({
+  paymentPlan: one(paymentPlan),
   vendor: one(vendor, {
     fields: [contract.vendorId],
     references: [vendor.id],
