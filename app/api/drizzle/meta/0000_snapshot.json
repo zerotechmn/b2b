@@ -1,5 +1,5 @@
 {
-  "id": "a9822bd2-1fd0-4136-afab-bde19b80bccd",
+  "id": "e62f67be-4076-4158-a0c7-5c0f7d9adf49",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -42,117 +42,6 @@
       },
       "indexes": {},
       "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    },
-    "public.company": {
-      "name": "company",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "register": {
-          "name": "register",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "phone_number": {
-          "name": "phone_number",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "email": {
-          "name": "email",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "address_id": {
-          "name": "address_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "company_address_id_address_id_fk": {
-          "name": "company_address_id_address_id_fk",
-          "tableFrom": "company",
-          "tableTo": "address",
-          "columnsFrom": [
-            "address_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    },
-    "public.contract": {
-      "name": "contract",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "expires_at": {
-          "name": "expires_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "contract_type": {
-          "name": "contract_type",
-          "type": "contract_type_enum",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "contract_user_id_user_id_fk": {
-          "name": "contract_user_id_user_id_fk",
-          "tableFrom": "contract",
-          "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
@@ -205,8 +94,8 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "public.payment_date_each_month": {
-      "name": "payment_date_each_month",
+    "public.role": {
+      "name": "role",
       "schema": "",
       "columns": {
         "id": {
@@ -216,111 +105,28 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
-        "payment_plan_id": {
-          "name": "payment_plan_id",
-          "type": "uuid",
+        "name": {
+          "name": "name",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
-        "period": {
-          "name": "period",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "months_after": {
-          "name": "months_after",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "default": 1
-        },
-        "payment_date_type": {
-          "name": "payment_date_type",
-          "type": "payment_date_type_enum",
+        "platform": {
+          "name": "platform",
+          "type": "platform_enum",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": true
         },
-        "same_day_each_month": {
-          "name": "same_day_each_month",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "last_weekday": {
-          "name": "last_weekday",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "days_after": {
-          "name": "days_after",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "payment_date_each_month_payment_plan_id_payment_plan_id_fk": {
-          "name": "payment_date_each_month_payment_plan_id_payment_plan_id_fk",
-          "tableFrom": "payment_date_each_month",
-          "tableTo": "payment_plan",
-          "columnsFrom": [
-            "payment_plan_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    },
-    "public.payment_plan": {
-      "name": "payment_plan",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "contract_id": {
-          "name": "contract_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "payment_type": {
-          "name": "payment_type",
-          "type": "payment_type_enum",
-          "typeSchema": "public",
+        "permissions": {
+          "name": "permissions",
+          "type": "permission_enum[]",
           "primaryKey": false,
           "notNull": true
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "payment_plan_contract_id_contract_id_fk": {
-          "name": "payment_plan_contract_id_contract_id_fk",
-          "tableFrom": "payment_plan",
-          "tableTo": "contract",
-          "columnsFrom": [
-            "contract_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
@@ -395,11 +201,17 @@
           "primaryKey": false,
           "notNull": false
         },
-        "company_id": {
-          "name": "company_id",
-          "type": "text",
+        "vendor_id": {
+          "name": "vendor_id",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": false
+        },
+        "role_id": {
+          "name": "role_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
         },
         "firstTimePassword": {
           "name": "firstTimePassword",
@@ -420,6 +232,180 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
+    "public.contract": {
+      "name": "contract",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "vendor_id": {
+          "name": "vendor_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "contract_type": {
+          "name": "contract_type",
+          "type": "contract_type_enum",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.payment_date_each_month": {
+      "name": "payment_date_each_month",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "payment_plan_id": {
+          "name": "payment_plan_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "period": {
+          "name": "period",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "months_after": {
+          "name": "months_after",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "payment_date_type": {
+          "name": "payment_date_type",
+          "type": "payment_date_type_enum",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "same_day_each_month": {
+          "name": "same_day_each_month",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_weekday": {
+          "name": "last_weekday",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "days_after": {
+          "name": "days_after",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.payment_plan": {
+      "name": "payment_plan",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "contract_id": {
+          "name": "contract_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "payment_type": {
+          "name": "payment_type",
+          "type": "payment_type_enum",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.vendor": {
+      "name": "vendor",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "register": {
+          "name": "register",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "phone_number": {
+          "name": "phone_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "address_id": {
+          "name": "address_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "public.wallet": {
       "name": "wallet",
       "schema": "",
@@ -430,6 +416,12 @@
           "primaryKey": true,
           "notNull": true,
           "default": "gen_random_uuid()"
+        },
+        "vendor_id": {
+          "name": "vendor_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
         },
         "balance": {
           "name": "balance",
@@ -445,31 +437,49 @@
     }
   },
   "enums": {
+    "public.permission_enum": {
+      "name": "permission_enum",
+      "schema": "public",
+      "values": [
+        "CREATE_CARD",
+        "READ_CARD",
+        "UPDATE_CARD",
+        "DELETE_CARD"
+      ]
+    },
+    "public.platform_enum": {
+      "name": "platform_enum",
+      "schema": "public",
+      "values": [
+        "ADMIN",
+        "VENDOR"
+      ]
+    },
     "public.contract_type_enum": {
       "name": "contract_type_enum",
       "schema": "public",
       "values": [
-        "pre_paid",
-        "post_paid"
+        "PRE_PAID",
+        "POST_PAID"
       ]
     },
     "public.payment_date_type_enum": {
       "name": "payment_date_type_enum",
       "schema": "public",
       "values": [
-        "same_day_each_month",
-        "last_weekday",
-        "last_day_of_the_month",
-        "days_after"
+        "SAME_DAY_EACH_MONTH",
+        "LAST_WEEKDAY",
+        "LAST_DAY_OF_THE_MONTH",
+        "DAYS_AFTER"
       ]
     },
     "public.payment_type_enum": {
       "name": "payment_type_enum",
       "schema": "public",
       "values": [
-        "monthly",
-        "days_after",
-        "custom"
+        "MONTHLY",
+        "DAYS_AFTER",
+        "CUSTOM"
       ]
     }
   },

@@ -1,16 +1,14 @@
-import { lucia } from "@/auth";
 import { isWithinExpirationDate } from "@/lib/utils";
 import { zValidator } from "@hono/zod-validator";
 import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { verify } from "hono/jwt";
-import { generateIdFromEntropySize } from "lucia";
 import { z } from "zod";
-import { generateAccessToken } from "../../../../lib/jwt";
+import { generateAccessToken, generateBase62Token } from "../../../../lib/jwt";
 import { db } from "../../database/client";
 import { user } from "../../database/schema";
 import { comparePassword, hashPassword } from "../../tools/crypt";
-import { passwordResetToken } from "./../../database/schema";
+import { passwordResetToken } from "../../database/schema";
 import login from "./login";
 
 const authRoute = new Hono()
@@ -30,6 +28,7 @@ const authRoute = new Hono()
     zValidator(
       "json",
       z.object({
+        number: z.number(),
         email: z.string(),
         refreshToken: z.string(),
       })
@@ -66,16 +65,9 @@ const authRoute = new Hono()
     async (c) => {
       const { email } = c.req.valid("json");
 
-      console.log("huhh", email);
-
-      const response = await db.query.user
-        .findFirst({
-          where: eq(user.email, email),
-        })
-        .catch((e) => {
-          console.error("User query error: ", e);
-          return null;
-        });
+      const response = await db.query.user.findFirst({
+        where: eq(user.email, email),
+      });
 
       if (!response) {
         return c.json({ error: "User with this email not found!" }, 404);
@@ -118,19 +110,11 @@ const authRoute = new Hono()
         return c.json({ message: "Invalid or expired token!" }, 400);
       }
 
-      await lucia.invalidateUserSessions(token.userId);
       const passwordHash = await hashPassword(password);
       await db
         .update(user)
         .set({ password: passwordHash })
         .where(eq(user.id, token.userId));
-
-      const session = await lucia.createSession(token.userId, {});
-      const sessionCookie = lucia.createSessionCookie(session.id);
-
-      c.header("location", "/");
-      c.header("Set-Cookie", sessionCookie.serialize());
-      c.header("Referrer-Policy", "strict-origin");
 
       return c.json({ message: "Password reset successful" }, 302);
     }
@@ -144,7 +128,7 @@ async function createPasswordResetToken(userId: string): Promise<string> {
     .delete(passwordResetToken)
     .where(eq(passwordResetToken.userId, user.id));
 
-  const tokenId = generateIdFromEntropySize(25); // 40 character
+  const tokenId = generateBase62Token(25);
   const tokenHash = await hashPassword(tokenId);
 
   await db.insert(passwordResetToken).values({

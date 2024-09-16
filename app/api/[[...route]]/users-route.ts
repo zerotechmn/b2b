@@ -3,8 +3,9 @@ import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
 import { db } from "../database/client";
-import { user } from "../database/schema";
+import { permissionEnum, platformEnum, user } from "../database/schema";
 import { hashPassword } from "../tools/crypt";
+import { platform } from "os";
 
 const usersRoute = new Hono()
   .get("/", (c) =>
@@ -31,8 +32,10 @@ const usersRoute = new Hono()
         .values({
           email,
           name: "New User",
+          vendorId: "",
           firstTimePassword: "",
           refreshToken: "",
+          role: platformEnum.ADMIN,
         })
         .returning();
 

@@ -5,6 +5,7 @@ import Link from "next/link";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import { useToast } from "@/components/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -15,33 +16,28 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { signInSchema } from "@/lib/zod";
+import { redirect, useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { login } from "../actions";
 
-const formSchema = z.object({
-  email: z.string(),
-  password: z.string(),
-});
-
 export default function Login() {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const { toast } = useToast();
+  const router = useRouter();
+
+  const form = useForm<z.infer<typeof signInSchema>>({
+    resolver: zodResolver(signInSchema),
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    const response = await login(values);
-
-    if (response.error) {
-      form.setError("email", {
-        type: "manual",
-        message: "",
-      });
-      form.setError("password", {
-        type: "manual",
-        message: "Invalid username or password!",
-      });
-    }
+  async function onSubmit(values: z.infer<typeof signInSchema>) {
+    await login(values).then((res) => {
+      if (!!res?.error) {
+        toast({ title: res?.error, variant: "destructive" });
+      } else {
+        router.replace("/");
+      }
+    });
   }
 
   return (

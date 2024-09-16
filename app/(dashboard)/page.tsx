@@ -2,10 +2,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 export default async function Home() {
-  // const res = await api.users
-  //   .$get()
-  //   .then((res) => res.json())
-  //   .catch((e) => console.error(e));
+  // const me = await getUser();
+
+  // console.log("me", me);
 
   return (
     <Card>
