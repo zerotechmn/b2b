@@ -27,15 +27,9 @@ export default async function login(
 ) {
   const { email, password } = c.req.valid("json");
 
-  const users = await db.query.user.findFirst();
-
-  console.log("emaikl", email, users);
-
   const currentUser = await db.query.user.findFirst({
     where: eq(user.email, email),
   });
-
-  console.log("user", currentUser);
 
   if (
     !currentUser ||
@@ -48,7 +42,7 @@ export default async function login(
       {
         error: "Invalid user or password!",
       },
-      403
+      404
     );
   }
 

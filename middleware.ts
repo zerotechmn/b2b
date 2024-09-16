@@ -1,17 +1,17 @@
-import type { NextRequest } from "next/server";
+import { auth } from "./auth";
 
-export function middleware(request: NextRequest) {
-  // TODO: Set middlewares with roles
-  // const cookie = cookies().get("session")?.value;
-  // if (request.nextUrl.pathname.match("/") && !cookie) {
-  //   return NextResponse.rewrite(new URL("/auth/login", request.url));
-  // }
-  // if (request.nextUrl.pathname.startsWith("/dashboard")) {
-  //   return NextResponse.rewrite(new URL("/dashboard/user", request.url));
-  // }
-}
+export default auth((req) => {
+  const { nextUrl } = req;
+  const isAuthenticated = !!req.auth;
 
-// See "Matching Paths" below to learn more
+  if (nextUrl.pathname.startsWith("/auth")) {
+    if (isAuthenticated) return Response.redirect(new URL("/", nextUrl));
+  } else {
+    if (!isAuthenticated)
+      return Response.redirect(new URL("/auth/login", nextUrl));
+  }
+});
+
 export const config = {
-  matcher: "/:path*",
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 };

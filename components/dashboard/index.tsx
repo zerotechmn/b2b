@@ -6,11 +6,13 @@ import {
   HelpCircle,
   LineChart,
   LogOut,
+  Menu,
   Wallet,
   WalletCards,
 } from "lucide-react";
 import Link from "next/link";
 
+import { auth, signOut } from "@/auth";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -20,9 +22,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Separator } from "@/components/ui/separator";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { IconCards, IconGasStation } from "@tabler/icons-react";
 import Image from "next/image";
 import { MenuItem } from "./menu-item";
+import { SheetMenu } from "./sheet-menu";
 
 interface Props {
   children: React.ReactNode;
@@ -94,25 +99,29 @@ export function Dashboard({ children }: Props) {
             </nav>
           </div>
 
-          {/* <Separator /> */}
+          <Separator />
 
           <div className="p-4 text-sm font-medium">
             <MenuItem href="/" title="Тусламж" Icon={HelpCircle} />
             <MenuItem href="/" title="Холбоо барих" Icon={Contact2} />
 
-            <Link
-              href="#"
-              className="flex items-center gap-3 rounded-lg px-3 py-2 text-destructive transition-all hover:text-destructive/80"
+            <form
+              action={async (e) => {
+                "use server";
+                await signOut();
+              }}
             >
-              <LogOut className="h-4 w-4" />
-              Гарах
-            </Link>
+              <button className="flex items-center gap-3 rounded-lg px-3 py-2 text-destructive transition-all hover:text-destructive/80">
+                <LogOut className="h-4 w-4" />
+                Гарах
+              </button>
+            </form>
           </div>
         </div>
       </div>
       <div className="flex flex-col overflow-x-scroll">
         <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
-          {/* <Sheet>
+          <Sheet>
             <SheetTrigger asChild>
               <Button
                 variant="outline"
@@ -164,7 +173,7 @@ export function Dashboard({ children }: Props) {
                 </Link>
               </nav>
             </SheetContent>
-          </Sheet> */}
+          </Sheet>
           <div className="w-full flex flex-1 gap-4 items-center">
             <h1 className="text-base lg:text-xl font-semibold mr-auto">
               Байгууллагын Мэдээлэл

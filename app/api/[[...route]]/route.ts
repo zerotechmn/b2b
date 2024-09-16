@@ -6,6 +6,7 @@ import { handle } from "hono/vercel";
 import { jwtMiddleware } from "../../../lib/jwt";
 import authRoute from "./auth-route";
 import usersRoute from "./users-route";
+import vendorRoute from "./vendor-route";
 
 // export const runtime = "edge";
 
@@ -33,8 +34,9 @@ app.use(
 app.use("/users/*", jwtMiddleware);
 
 const route = app
-  .route("/auth", authRoute)
+  .route("/authenticate", authRoute)
   .route("/users", usersRoute)
+  .route("/vendor", vendorRoute)
   .get("/health", (c) => {
     return c.json({
       message: "Hello Next.js!",

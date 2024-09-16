@@ -22,3 +22,16 @@ export async function generateAccessToken(user: any) {
 export async function generateRefreshToken(user: any) {
   return await sign(user, process.env.JWT_REFRESH_SECRET!);
 }
+
+export function generateBase62Token(length: number): string {
+  const base62Chars =
+    "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+  let token = "";
+
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * base62Chars.length);
+    token += base62Chars[randomIndex];
+  }
+
+  return token;
+}
