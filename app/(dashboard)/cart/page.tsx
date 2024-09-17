@@ -1,10 +1,10 @@
-import { DataTableDemo } from "@/components/dashboard/table-item";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { columns } from "./table-columns";
 import IconButton from "@/components/dashboard/icon-button";
 import Header from "./header";
 import { BreadcrumbCustom, SubHeader } from "./sub-link";
 import { data } from "./make-data";
+import { DataTable } from "@/components/data-table";
 
 export default async function Page() {
   const listTitle: SubHeader[] = [
@@ -47,7 +47,7 @@ export default async function Page() {
             </div>
           </CardHeader>
           <CardContent>
-            <DataTableDemo data={data} columns={columns}></DataTableDemo>
+            <DataTable data={data} columns={columns}></DataTable>
           </CardContent>
         </Card>
       </div>

@@ -35,12 +35,12 @@ interface Props {
 
 const menus = [
   {
-    href: "/companies",
+    href: "/",
     title: "Байгууллага",
     Icon: Building2,
   },
   {
-    href: "/",
+    href: "/carts",
     title: "Картууд",
     Icon: IconCards,
   },

@@ -1,25 +1,14 @@
 "use client";
-import * as React from "react";
+
 import {
   ColumnDef,
-  ColumnFiltersState,
-  SortingState,
-  VisibilityState,
   flexRender,
   getCoreRowModel,
-  getFilteredRowModel,
+  useReactTable,
   getPaginationRowModel,
   getSortedRowModel,
-  useReactTable,
 } from "@tanstack/react-table";
 
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
   Table,
   TableBody,
@@ -28,43 +17,44 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Payment } from "@/app/(dashboard)/companies/make-data";
 
+import { useEffect } from "react";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "../ui/button";
 import { Plus } from "lucide-react";
 
-export function DataTableDemo({
-  data,
-  columns,
-}: {
-  data: Payment[];
-  columns: ColumnDef<Payment>[];
-}) {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  );
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
+interface DataTableProps<TData, TValue> {
+  columns: ColumnDef<TData, TValue>[];
+  data: TData[];
+  hiddedColumns?: string[];
+}
 
+export function DataTable<TData, TValue>({
+  columns,
+  data,
+  hiddedColumns,
+}: DataTableProps<TData, TValue>) {
   const table = useReactTable({
     data,
     columns,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
-    state: {
-      sorting,
-      columnFilters,
-      columnVisibility,
-      rowSelection,
-    },
   });
+
+  useEffect(() => {
+    if (hiddedColumns) {
+      hiddedColumns.forEach((column) => {
+        table.getColumn(column)?.toggleVisibility(false);
+      });
+    }
+  }, [table, hiddedColumns]);
+
   return (
     <div className="w-full">
       <div className="flex items-center py-4">
@@ -94,14 +84,6 @@ export function DataTableDemo({
               })}
           </DropdownMenuContent>
         </DropdownMenu>
-        {/* <Input
-            placeholder="Filter emails..."
-            value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
-            onChange={(event) =>
-              table.getColumn("email")?.setFilterValue(event.target.value)
-            }
-            className="max-w-sm"
-          /> */}
       </div>
       <div className="rounded-md border">
         <Table>
