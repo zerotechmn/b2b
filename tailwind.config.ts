@@ -55,6 +55,11 @@ const config = {
           DEFAULT: "hsla(var(--card))",
           foreground: "hsla(var(--card-foreground))",
         },
+        surface: {
+          surface1: "hsla(var(--surface-surface1)) ",
+          surface2: "hsla(var(--surface-surface2))",
+          surface3: "hsla(var(--surface-surface3))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
