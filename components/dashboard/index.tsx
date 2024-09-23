@@ -1,18 +1,14 @@
 import {
   Bell,
-  Building2,
   CircleUser,
   Contact2,
   HelpCircle,
-  LineChart,
   LogOut,
   Menu,
-  Wallet,
-  WalletCards,
 } from "lucide-react";
 import Link from "next/link";
 
-import { auth, signOut } from "@/auth";
+import { signOut } from "@/auth";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -24,54 +20,20 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { IconCards, IconGasStation } from "@tabler/icons-react";
 import Image from "next/image";
-import { MenuItem } from "./menu-item";
-import { SheetMenu } from "./sheet-menu";
+import { SheetMenu, SheetMenuBottom } from "./sheet-menu";
+import MenuItem, { MenuItemBottom } from "./menu-item";
 
 interface Props {
   children: React.ReactNode;
 }
 
-const menus = [
-  {
-    href: "/",
-    title: "Байгууллага",
-    Icon: Building2,
-  },
-  {
-    href: "/",
-    title: "Картууд",
-    Icon: IconCards,
-  },
-  {
-    href: "/",
-    title: "Карт цэнэглэлт",
-    Icon: Wallet,
-  },
-  {
-    href: "/",
-    title: "Карт захиалга",
-    Icon: WalletCards,
-  },
-  {
-    href: "/",
-    title: "Тайлан",
-    Icon: LineChart,
-  },
-  {
-    href: "/",
-    title: "ШТС-ын мэдээлэл",
-    Icon: IconGasStation,
-  },
-];
-
 export function Dashboard({ children }: Props) {
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
-      <div className="hidden border-r bg-muted/40 md:block">
-        <div className="flex h-full max-h-screen flex-col gap-2">
-          <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
+      <div className="hidden border-r bg-muted/40 md:block md:overflow-hidden flex-none h-screen sticky top-0">
+        <div className="flex h-full max-h-screen flex-col gap-2 ">
+          <div className="flex h-14 items-center border-b px-0 lg:h-[60px] lg:px-6">
             <Link href="/" className="flex items-center gap-2 font-semibold">
               <Image
                 src="/logo-2.png"
@@ -87,23 +49,18 @@ export function Dashboard({ children }: Props) {
             </Button>
           </div>
           <div className="flex-1">
-            <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
-              {menus.map((menu) => (
-                <MenuItem
-                  key={menu.href}
-                  href={menu.href}
-                  title={menu.title}
-                  Icon={menu.Icon}
-                />
-              ))}
+            <nav className="grid items-start text-sm font-medium  mt-6">
+              <MenuItem />
             </nav>
           </div>
 
           <Separator />
 
           <div className="p-4 text-sm font-medium">
-            <MenuItem href="/" title="Тусламж" Icon={HelpCircle} />
-            <MenuItem href="/" title="Холбоо барих" Icon={Contact2} />
+            {/* <MenuItem href="/" title="Тусламж" Icon={HelpCircle} />
+            <MenuItem href="/" title="Холбоо барих" Icon={Contact2} /> */}
+
+            <MenuItemBottom />
 
             <form
               action={async (e) => {
@@ -119,7 +76,7 @@ export function Dashboard({ children }: Props) {
           </div>
         </div>
       </div>
-      <div className="flex flex-col">
+      <div className="flex flex-col overflow-x-scroll">
         <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
           <Sheet>
             <SheetTrigger asChild>
@@ -148,21 +105,21 @@ export function Dashboard({ children }: Props) {
                   <span className="text-secondary">Шунхлай</span>
                 </Link>
 
-                {menus.map((menu) => (
+                {/* {menus.map((menu) => (
                   <SheetMenu
                     key={menu.href}
                     href={menu.href}
                     title={menu.title}
                     Icon={menu.Icon}
                   />
-                ))}
+                ))} */}
+                <SheetMenu />
               </nav>
 
               <Separator />
 
               <nav className="grid gap-2 text-lg font-medium">
-                <SheetMenu href="/" title="Тусламж" Icon={HelpCircle} />
-                <SheetMenu href="/" title="Холбоо барих" Icon={Contact2} />
+                <SheetMenuBottom />
 
                 <Link
                   href="#"
@@ -212,7 +169,7 @@ export function Dashboard({ children }: Props) {
             </DropdownMenuContent>
           </DropdownMenu>
         </header>
-        <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
+        <main className="flex flex-1 flex-col gap-4  lg:gap-6  overflow-x-auto overflow-y-auto md:overflow-y-auto">
           {children}
         </main>
       </div>
