@@ -4,6 +4,7 @@ import { z } from "zod";
 
 export * from "./user";
 export * from "./vendor";
+export * from "./driver-card";
 
 export function convertPgEnum<T extends [string, ...string[]]>(
   pgEnum: PgEnum<T>

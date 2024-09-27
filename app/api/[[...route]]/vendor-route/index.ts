@@ -2,17 +2,34 @@ import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { z } from "zod";
 import { db } from "../../database/client";
-import {
-  address,
-  contract,
-  contractTypeEnum,
-  paymentDateEachMonth,
-  paymentDateTypeEnum,
-  paymentPlan,
-  paymentTypeEnum,
-  vendor,
-  wallet,
-} from "../../database/schema";
+import { address, vendor, wallet } from "../../database/schema";
+import createContract, { z_contract } from "./create-contract";
+
+const requestJson = {
+  name: "Vendor Name",
+  register: "123",
+  phoneNumber: "123",
+  email: "",
+  address: {
+    bagKhorooId: "123",
+    details: "123",
+    coordinate: "123",
+    phone_number: "123",
+  },
+  contract: {
+    expiresAt: "2022-10-10",
+    contractType: "POST_PAID",
+    paymentType: "MONTHLY",
+    period: "2022-10-10",
+    monthsAfter: 1,
+    paymentDateType: "SAME_DAY_EACH_MONTH",
+    sameDayEachMonth: 1,
+    weekOfMonth: 1,
+    dayOfWeek: 1,
+    daysAfter: 1,
+  },
+  managerEmail: "",
+};
 
 const vendorRoute = new Hono()
   .post(
@@ -30,6 +47,8 @@ const vendorRoute = new Hono()
           coordinate: z.string(),
           phone_number: z.string(),
         }),
+        contract: z_contract,
+        managerEmail: z.string(),
       })
     ),
     async (c) => {
@@ -39,6 +58,7 @@ const vendorRoute = new Hono()
         phoneNumber,
         email,
         address: addressData,
+        contract: contractData,
       } = c.req.valid("json");
 
       const createdVendor = await db.transaction(async (tx) => {
@@ -71,6 +91,8 @@ const vendorRoute = new Hono()
           })
           .returning();
 
+        await createContract({ vendorId: newVendor[0].id, ...contractData });
+
         return newVendor[0];
       });
 
@@ -86,63 +108,15 @@ const vendorRoute = new Hono()
       "json",
       z.object({
         vendorId: z.string(),
-        expiresAt: z.date(),
-        contractType: z.enum(contractTypeEnum.enumValues),
-        paymentType: z.enum(paymentTypeEnum.enumValues),
-        period: z.date(),
-        monthsAfter: z.number(),
-        paymentDateType: z.enum(paymentDateTypeEnum.enumValues),
-        sameDayEachMonth: z.number(),
-        lastWeekday: z.number(),
-        daysAfter: z.number(),
+        z_contract,
       })
     ),
     async (c) => {
-      const {
+      const { vendorId, z_contract } = c.req.valid("json");
+
+      const createdContract = await createContract({
         vendorId,
-        expiresAt,
-        contractType,
-        paymentType,
-        period,
-        monthsAfter,
-        paymentDateType,
-        sameDayEachMonth,
-        lastWeekday,
-        daysAfter,
-      } = c.req.valid("json");
-
-      const createdContract = await db.transaction(async (tx) => {
-        const newContract = await tx
-          .insert(contract)
-          .values({
-            vendorId,
-            expiresAt,
-            contractType,
-          })
-          .returning();
-
-        const newPaymentPlan = await tx
-          .insert(paymentPlan)
-          .values({
-            contractId: newContract[0].id,
-            paymentType,
-          })
-          .returning();
-
-        await tx
-          .insert(paymentDateEachMonth)
-          .values({
-            paymentPlanId: newPaymentPlan[0].id,
-            period,
-            monthsAfter,
-            paymentDateType,
-            sameDayEachMonth,
-            lastWeekday,
-            daysAfter,
-          })
-          .returning();
-
-        return newContract[0];
+        ...z_contract,
       });
 
       return c.json(

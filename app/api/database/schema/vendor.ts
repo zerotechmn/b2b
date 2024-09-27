@@ -1,6 +1,5 @@
 import {
   integer,
-  PgEnum,
   pgEnum,
   pgTable,
   text,
@@ -9,11 +8,6 @@ import {
 } from "drizzle-orm/pg-core";
 import { address } from ".";
 import { relations } from "drizzle-orm";
-
-export const contractTypeEnum = pgEnum("contract_type_enum", [
-  "PRE_PAID",
-  "POST_PAID",
-]);
 
 export const vendor = pgTable("vendor", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -46,14 +40,66 @@ export const walletRelations = relations(wallet, ({ one }) => ({
   }),
 }));
 
+export const contractTypeEnum = pgEnum("contract_type_enum", [
+  "PRE_PAID",
+  "POST_PAID",
+]);
+
+export const ownershipTypeEnum = pgEnum("ownership_type_enum", [
+  "PERSONAL",
+  "STATE",
+]);
+
+export const salesChannelEnum = pgEnum("sales_channel_enum", [
+  "RETAIL",
+  "BULK",
+]);
+
+export const eReceiptEnum = pgEnum("e_receipt_enum", [
+  "BULK",
+  "SINGLE",
+  "RECEIPT_FREE",
+]);
+
+export const zoneEnum = pgEnum("zone_enum", [
+  "Баруун бүс",
+  "Говийн бүс",
+  "Дархан бүс",
+  "Зүүн бүс",
+  "Орхон бүс",
+  "Сайншанд бүс",
+  "Төв бүс-1 бүс",
+  "Төв бүс-2 бүс",
+  "Хангайн бүс",
+]);
+
+export const localEntityEnum = pgEnum("local_entity_enum", [
+  "Шунхлай ХХК",
+  "Шунхлай Трейдинг ХХК",
+  "Шунхлай Говь ХХК",
+  "Шунхлай Петролиум ХХК",
+  "Эс жи ханги гейт ХХК",
+  "Эс эи шивээ хүрэн депо ХХК",
+]);
+
 export const contract = pgTable("contract", {
   id: uuid("id").primaryKey().defaultRandom(),
   vendorId: uuid("vendor_id").notNull(),
+  contractType: contractTypeEnum("contract_type").notNull(),
+  ownership: ownershipTypeEnum("ownership").notNull(),
+  salesChannel: salesChannelEnum("sales_channel").notNull(),
+  zone: zoneEnum("zone").notNull(),
+  localEntity: localEntityEnum("local_entity").notNull(),
+  discount: integer("discount").notNull().default(0),
+  penaltyChargePercentage: integer("penalty_charge_percentage")
+    .notNull()
+    .default(0),
+  maximumLoanAmount: integer("maximum_loan_amount").notNull().default(0),
+  eReceipt: eReceiptEnum("e_receipt").notNull(),
   expiresAt: timestamp("expires_at", {
     withTimezone: true,
     mode: "date",
   }).notNull(),
-  contractType: contractTypeEnum("contract_type").notNull(),
 });
 
 export const contractRelations = relations(contract, ({ one }) => ({
@@ -87,7 +133,6 @@ export const paymentDateTypeEnum = pgEnum("payment_date_type_enum", [
   "SAME_DAY_EACH_MONTH",
   "LAST_WEEKDAY",
   "LAST_DAY_OF_THE_MONTH",
-  "DAYS_AFTER",
 ]);
 
 export const paymentDateEachMonth = pgTable("payment_date_each_month", {
@@ -97,7 +142,8 @@ export const paymentDateEachMonth = pgTable("payment_date_each_month", {
   monthsAfter: integer("months_after").notNull().default(1), // Payments from 2024-06-01 to 2024-07-01 can be paid several months after. 1 will be calculated as next month.
   paymentDateType: paymentDateTypeEnum("payment_date_type").notNull(),
   sameDayEachMonth: integer("same_day_each_month"), // 1 to 31
-  lastWeekday: integer("last_weekday"), // 1 to 7
+  weekOfMonth: integer("week_of_month"), // 1 to 5
+  dayOfWeek: integer("day_of_week"), // 1 to 7
   daysAfter: integer("days_after"), // If this option is chosen, months_after will be ignored.
 });
 

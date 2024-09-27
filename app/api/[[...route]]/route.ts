@@ -35,11 +35,11 @@ app.use("/users/*", jwtMiddleware);
 
 const route = app
   .route("/authenticate", authRoute)
-  .route("/users", usersRoute)
+  .route("/user", usersRoute)
   .route("/vendor", vendorRoute)
   .get("/health", (c) => {
     return c.json({
-      message: "Hello Next.js!",
+      message: "Hello!",
       health: "ok",
     });
   });

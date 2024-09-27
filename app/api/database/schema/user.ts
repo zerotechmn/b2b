@@ -23,17 +23,17 @@ export const user = pgTable("user", {
   name: text("name").notNull(),
   email: text("email").notNull(),
   password: text("password"),
-  vendorId: uuid("vendor_id"),
+  // vendorId: uuid("vendor_id"),
   roleId: uuid("role_id").notNull(),
   firstTimePassword: text("firstTimePassword"),
   refreshToken: text("refreshToken").notNull().default("hi"),
 });
 
 export const usersRelations = relations(user, ({ one }) => ({
-  vendor: one(vendor, {
-    fields: [user.vendorId],
-    references: [vendor.id],
-  }),
+  // vendor: one(vendor, {
+  //   fields: [user.vendorId],
+  //   references: [vendor.id],
+  // }),
   role: one(role, {
     fields: [user.roleId],
     references: [role.id],
