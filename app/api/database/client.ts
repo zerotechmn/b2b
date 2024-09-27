@@ -14,4 +14,4 @@ if (!DATABASE_URL) {
 export const migrationClient = postgres(DATABASE_URL, { max: 1 });
 
 export const queryClient = postgres(DATABASE_URL);
-export const db = drizzle(queryClient, { schema });
+export const db = drizzle(queryClient, { schema, logger: true });

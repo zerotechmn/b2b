@@ -30,7 +30,7 @@ const menus = [
     Icon: Building2,
   },
   {
-    href: "/carts",
+    href: "/cards",
     title: "Картууд",
     Icon: IconCards,
   },

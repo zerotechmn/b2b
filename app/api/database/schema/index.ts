@@ -4,8 +4,11 @@ import { z } from "zod";
 
 export * from "./user";
 export * from "./vendor";
+export * from "./driver-card";
 
-export function convertPgEnum(pgEnum: PgEnum<[string]>) {
+export function convertPgEnum<T extends [string, ...string[]]>(
+  pgEnum: PgEnum<T>
+) {
   return z.enum(pgEnum.enumValues).Enum;
 }
 

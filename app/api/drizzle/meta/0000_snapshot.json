@@ -1,9 +1,211 @@
 {
-  "id": "e62f67be-4076-4158-a0c7-5c0f7d9adf49",
+  "id": "e65cc21d-598d-4db2-995f-d51c6d74407f",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
+    "public.role": {
+      "name": "role",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "platform": {
+          "name": "platform",
+          "type": "platform_enum",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "permissions": {
+          "name": "permissions",
+          "type": "permission_enum[]",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.card_requests": {
+      "name": "card_requests",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "vendor_id": {
+          "name": "vendor_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "requested_amount": {
+          "name": "requested_amount",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "requested_at": {
+          "name": "requested_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.product_balance": {
+      "name": "product_balance",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "card_id": {
+          "name": "card_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "product": {
+          "name": "product",
+          "type": "product_enum",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "balance": {
+          "name": "balance",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "available_stations": {
+          "name": "available_stations",
+          "type": "uuid[]",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.statement": {
+      "name": "statement",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "card_id": {
+          "name": "card_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "amount": {
+          "name": "amount",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "from": {
+          "name": "from",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "to": {
+          "name": "to",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "details": {
+          "name": "details",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "station_id": {
+          "name": "station_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "public.address": {
       "name": "address",
       "schema": "",
@@ -94,42 +296,6 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "public.role": {
-      "name": "role",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "platform": {
-          "name": "platform",
-          "type": "platform_enum",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "permissions": {
-          "name": "permissions",
-          "type": "permission_enum[]",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    },
     "public.session": {
       "name": "session",
       "schema": "",
@@ -201,12 +367,6 @@
           "primaryKey": false,
           "notNull": false
         },
-        "vendor_id": {
-          "name": "vendor_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": false
-        },
         "role_id": {
           "name": "role_id",
           "type": "uuid",
@@ -249,16 +409,72 @@
           "primaryKey": false,
           "notNull": true
         },
-        "expires_at": {
-          "name": "expires_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true
-        },
         "contract_type": {
           "name": "contract_type",
           "type": "contract_type_enum",
           "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ownership": {
+          "name": "ownership",
+          "type": "ownership_type_enum",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sales_channel": {
+          "name": "sales_channel",
+          "type": "sales_channel_enum",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "zone": {
+          "name": "zone",
+          "type": "zone_enum",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "local_entity": {
+          "name": "local_entity",
+          "type": "local_entity_enum",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "discount": {
+          "name": "discount",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "penalty_charge_percentage": {
+          "name": "penalty_charge_percentage",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "maximum_loan_amount": {
+          "name": "maximum_loan_amount",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "e_receipt": {
+          "name": "e_receipt",
+          "type": "e_receipt_enum",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         }
@@ -311,8 +527,14 @@
           "primaryKey": false,
           "notNull": false
         },
-        "last_weekday": {
-          "name": "last_weekday",
+        "week_of_month": {
+          "name": "week_of_month",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "day_of_week": {
+          "name": "day_of_week",
           "type": "integer",
           "primaryKey": false,
           "notNull": false
@@ -437,6 +659,20 @@
     }
   },
   "enums": {
+    "public.product_enum": {
+      "name": "product_enum",
+      "schema": "public",
+      "values": [
+        "A-80",
+        "АИ-92",
+        "Евро Аи-92",
+        "АИ-95",
+        "АИ-98",
+        "Дизель",
+        "Евро-ДТ",
+        "Авто хий"
+      ]
+    },
     "public.permission_enum": {
       "name": "permission_enum",
       "schema": "public",
@@ -463,14 +699,42 @@
         "POST_PAID"
       ]
     },
+    "public.e_receipt_enum": {
+      "name": "e_receipt_enum",
+      "schema": "public",
+      "values": [
+        "BULK",
+        "SINGLE",
+        "RECEIPT_FREE"
+      ]
+    },
+    "public.local_entity_enum": {
+      "name": "local_entity_enum",
+      "schema": "public",
+      "values": [
+        "Шунхлай ХХК",
+        "Шунхлай Трейдинг ХХК",
+        "Шунхлай Говь ХХК",
+        "Шунхлай Петролиум ХХК",
+        "Эс жи ханги гейт ХХК",
+        "Эс эи шивээ хүрэн депо ХХК"
+      ]
+    },
+    "public.ownership_type_enum": {
+      "name": "ownership_type_enum",
+      "schema": "public",
+      "values": [
+        "PERSONAL",
+        "STATE"
+      ]
+    },
     "public.payment_date_type_enum": {
       "name": "payment_date_type_enum",
       "schema": "public",
       "values": [
         "SAME_DAY_EACH_MONTH",
         "LAST_WEEKDAY",
-        "LAST_DAY_OF_THE_MONTH",
-        "DAYS_AFTER"
+        "LAST_DAY_OF_THE_MONTH"
       ]
     },
     "public.payment_type_enum": {
@@ -480,6 +744,29 @@
         "MONTHLY",
         "DAYS_AFTER",
         "CUSTOM"
+      ]
+    },
+    "public.sales_channel_enum": {
+      "name": "sales_channel_enum",
+      "schema": "public",
+      "values": [
+        "RETAIL",
+        "BULK"
+      ]
+    },
+    "public.zone_enum": {
+      "name": "zone_enum",
+      "schema": "public",
+      "values": [
+        "Баруун бүс",
+        "Говийн бүс",
+        "Дархан бүс",
+        "Зүүн бүс",
+        "Орхон бүс",
+        "Сайншанд бүс",
+        "Төв бүс-1 бүс",
+        "Төв бүс-2 бүс",
+        "Хангайн бүс"
       ]
     }
   },
