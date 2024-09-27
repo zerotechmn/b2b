@@ -38,6 +38,7 @@
     --surface-surface1: 0, 0%, 100%, 1;
     --surface-surface2: 220, 43%, 99%, 1;
     --surface-surface3: 220, 12%, 95%, 1;
+    --surface-dusabled: 212, 92%, 10%, 0.3;
   }
 
   .dark {

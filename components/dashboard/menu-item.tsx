@@ -25,7 +25,7 @@ interface Props {
 
 const menus = [
   {
-    href: "/",
+    href: "/vendor",
     title: "Байгууллага",
     Icon: Building2,
   },
