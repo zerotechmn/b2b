@@ -30,24 +30,59 @@ const weekdays = [
   "Бямба гараг",
 ];
 
-interface Props {
-  initialDate?: Date;
-  setPaymentDate?: (date: Date) => void;
+type PaymentScheduleType =
+  | "SAME_DAY_EACH_MONTH"
+  | "LAST_WEEKDAY"
+  | "LAST_DAY_OF_THE_MONTH";
+
+interface PaymentSchedule {
+  frequency: "MONTHLY" | "DAYS_AFTER";
+  type?: PaymentScheduleType;
+  dayOfMonth?: number;
+  weekOfMonth?: number;
+  dayOfWeek?: number;
+  daysAfter?: number;
 }
 
-export function PaymentDateSelector({ initialDate, setPaymentDate }: Props) {
-  const [mainOption, setMainOption] = useState("MONTHLY");
-  const [subOption, setSubOption] = useState("SAME_DAY_EACH_MONTH");
-  const [selectedDate, setSelectedDate] = useState<Date>(
-    initialDate ?? new Date()
+interface PaymentDateSelectorProps {
+  initialSchedule?: PaymentSchedule;
+  setPaymentSchedule?: (schedule: PaymentSchedule) => void;
+}
+
+export function PaymentDateSelector({
+  initialSchedule,
+  setPaymentSchedule,
+}: PaymentDateSelectorProps) {
+  const [mainOption, setMainOption] = useState<"MONTHLY" | "DAYS_AFTER">(
+    initialSchedule?.frequency || "MONTHLY"
   );
-  const [daysAfter, setDaysAfter] = useState("0");
+  const [subOption, setSubOption] = useState<PaymentScheduleType>(
+    initialSchedule?.type || "SAME_DAY_EACH_MONTH"
+  );
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [daysAfter, setDaysAfter] = useState(
+    initialSchedule?.daysAfter?.toString() || "0"
+  );
   const [isOpen, setIsOpen] = useState(false);
   const [calendarDate, setCalendarDate] = useState<Date>(new Date());
 
   useEffect(() => {
     updateSelectedDate();
   }, [mainOption, subOption, daysAfter]);
+
+  useEffect(() => {
+    if (initialSchedule) {
+      setMainOption(initialSchedule.frequency);
+      setSubOption(initialSchedule.type || "SAME_DAY_EACH_MONTH");
+      setDaysAfter(initialSchedule.daysAfter?.toString() || "0");
+      if (initialSchedule.dayOfMonth) {
+        const newDate = new Date();
+        newDate.setDate(initialSchedule.dayOfMonth);
+        setSelectedDate(newDate);
+        setCalendarDate(newDate);
+      }
+    }
+  }, [initialSchedule]);
 
   const updateSelectedDate = () => {
     const today = new Date();
@@ -74,9 +109,30 @@ export function PaymentDateSelector({ initialDate, setPaymentDate }: Props) {
       newDate = today;
     }
 
-    setPaymentDate?.(newDate);
     setSelectedDate(newDate);
     setCalendarDate(newDate);
+    emitPaymentSchedule(newDate);
+  };
+
+  const emitPaymentSchedule = (date: Date) => {
+    if (!setPaymentSchedule) return;
+    const schedule: PaymentSchedule = {
+      frequency: mainOption,
+    };
+
+    if (mainOption === "MONTHLY") {
+      schedule.type = subOption;
+      if (subOption === "SAME_DAY_EACH_MONTH") {
+        schedule.dayOfMonth = date.getDate();
+      } else if (subOption === "LAST_WEEKDAY") {
+        schedule.weekOfMonth = getWeekOfMonth(date);
+        schedule.dayOfWeek = date.getDay();
+      }
+    } else {
+      schedule.daysAfter = parseInt(daysAfter) || 0;
+    }
+
+    setPaymentSchedule(schedule);
   };
 
   const getOrdinal = (n: number) => {
@@ -135,7 +191,13 @@ export function PaymentDateSelector({ initialDate, setPaymentDate }: Props) {
           <div className="space-y-4 w-64">
             <div>
               <Label htmlFor="main-option">Төрөл</Label>
-              <Select onValueChange={setMainOption} value={mainOption}>
+              <Select
+                onValueChange={(value: "MONTHLY" | "DAYS_AFTER") => {
+                  setMainOption(value);
+                  updateSelectedDate();
+                }}
+                value={mainOption}
+              >
                 <SelectTrigger id="main-option">
                   <SelectValue placeholder="Select payment frequency" />
                 </SelectTrigger>
@@ -148,8 +210,14 @@ export function PaymentDateSelector({ initialDate, setPaymentDate }: Props) {
 
             {mainOption === "MONTHLY" && (
               <div>
-                <Label htmlFor="sub-option">Payment Type</Label>
-                <Select onValueChange={setSubOption} value={subOption}>
+                <Label htmlFor="sub-option">Давтамж</Label>
+                <Select
+                  onValueChange={(value: PaymentScheduleType) => {
+                    setSubOption(value);
+                    updateSelectedDate();
+                  }}
+                  value={subOption}
+                >
                   <SelectTrigger id="sub-option">
                     <SelectValue placeholder="Select payment type" />
                   </SelectTrigger>
@@ -175,7 +243,10 @@ export function PaymentDateSelector({ initialDate, setPaymentDate }: Props) {
                   id="days-after"
                   type="number"
                   value={daysAfter}
-                  onChange={(e) => setDaysAfter(e.target.value)}
+                  onChange={(e) => {
+                    setDaysAfter(e.target.value);
+                    updateSelectedDate();
+                  }}
                   min="0"
                 />
               </div>
@@ -194,7 +265,6 @@ export function PaymentDateSelector({ initialDate, setPaymentDate }: Props) {
               selected={selectedDate}
               onSelect={(date) => {
                 if (date) {
-                  setPaymentDate?.(date);
                   setSelectedDate(date);
                   setCalendarDate(date);
                   if (
@@ -202,10 +272,10 @@ export function PaymentDateSelector({ initialDate, setPaymentDate }: Props) {
                     subOption === "LAST_DAY_OF_THE_MONTH"
                   ) {
                     const lastDay = lastDayOfMonth(date);
-                    setPaymentDate?.(lastDay);
                     setSelectedDate(lastDay);
                     setCalendarDate(lastDay);
                   }
+                  emitPaymentSchedule(date);
                 }
               }}
               month={calendarDate}

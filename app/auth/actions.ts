@@ -7,11 +7,11 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 
 export async function login(credentials: z.infer<typeof signInSchema>) {
-  return await signIn("credentials", { ...credentials, redirect: false })
-    .then()
-    .catch(() => {
-      return { error: "Invalid user or password!" };
-    });
+  try {
+    await signIn("credentials", { ...credentials, redirect: false });
+  } catch (error) {
+    return { error, message: "Invalid credentials" };
+  }
 }
 
 // export async function logout(): Promise<ActionResult> {

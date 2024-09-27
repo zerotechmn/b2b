@@ -1,9 +1,12 @@
+"use client";
+
+import { PaymentDateSelector } from "@/components/payment-date-selector";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader } from "@/components/ui/card";
 import { currencyFormat, truncateFormat } from "@/lib/utils";
 import { Plus } from "lucide-react";
 
-export default async function Header() {
+export default function Header() {
   return (
     <Card className="bg-white border-0 py-2">
       <CardHeader>
@@ -17,12 +20,15 @@ export default async function Header() {
             <TextColumn title="Эзэмшигч" text="Билгүүн Мөнхбат" />
           </div>
           <div className="md:ml-auto sm:items-center justify-center flex">
-            <Button variant="ghost">
+            {/* <Button variant="ghost">
               <Plus className="md:mr-2 h-4 w-4" /> Цэнэглэх заавар
             </Button>
             <Button variant="outline" className="bg-primary text-white">
               <Plus className="md:mr-2 h-4 w-4" /> Толгой карт цэнэглэх
-            </Button>
+            </Button> */}
+            <PaymentDateSelector
+              setPaymentSchedule={(e) => console.log("props:", e)}
+            />
           </div>
         </div>
       </CardHeader>

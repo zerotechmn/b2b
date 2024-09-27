@@ -23,6 +23,8 @@ export const authConfig = {
       authorize: async (credentials) => {
         const { email, password } = await signInSchema.parseAsync(credentials);
 
+        console.log("hjuhhh");
+
         const response = await api.authenticate.login.$post({
           json: { email, password },
         });
