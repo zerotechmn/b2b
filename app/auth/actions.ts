@@ -1,9 +1,7 @@
 "use server";
 
 import { signIn } from "@/auth";
-import { api } from "@/lib/api";
 import { signInSchema } from "@/lib/zod";
-import { redirect } from "next/navigation";
 import { z } from "zod";
 
 export async function login(credentials: z.infer<typeof signInSchema>) {

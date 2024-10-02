@@ -1,7 +1,6 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "@/components/hooks/use-toast";
-import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -11,8 +10,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { signInSchema } from "@/lib/zod";
-import { redirect, useRouter } from "next/navigation";
+import { signInSchema, vendorCreateSchema } from "@/lib/zod";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -20,11 +19,11 @@ export default function CreateVendorForm() {
   const { toast } = useToast();
   const router = useRouter();
 
-  const form = useForm<z.infer<typeof signInSchema>>({
-    resolver: zodResolver(signInSchema),
+  const form = useForm<z.infer<typeof vendorCreateSchema>>({
+    resolver: zodResolver(vendorCreateSchema),
   });
 
-  async function onSubmit(values: z.infer<typeof signInSchema>) {
+  async function onSubmit(values: z.infer<typeof vendorCreateSchema>) {
     // await login(values).then((res) => {
     //   if (!!res?.error) {
     //     toast({ title: res?.error, variant: "destructive" });
@@ -33,6 +32,7 @@ export default function CreateVendorForm() {
     //   }
     // });
   }
+  const {} = useForm();
 
   return (
     <div className="w-full">
@@ -42,7 +42,7 @@ export default function CreateVendorForm() {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
                 control={form.control}
-                name="email"
+                name="name"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Байгууллагын нэр</FormLabel>
@@ -53,7 +53,7 @@ export default function CreateVendorForm() {
                   </FormItem>
                 )}
               />
-              <FormField
+              {/* <FormField
                 control={form.control}
                 name="email"
                 render={({ field }) => (
@@ -65,8 +65,8 @@ export default function CreateVendorForm() {
                     <FormMessage />
                   </FormItem>
                 )}
-              />
-              <FormField
+              /> */}
+              {/* <FormField
                 control={form.control}
                 name="email"
                 render={({ field }) => (
@@ -78,11 +78,7 @@ export default function CreateVendorForm() {
                     <FormMessage />
                   </FormItem>
                 )}
-              />
-
-              <Button type="submit" className="w-200">
-                {form.formState.isSubmitting ? "loading..." : "Хадгалах"}
-              </Button>
+              /> */}
             </form>
           </Form>
         </div>

@@ -31,6 +31,7 @@ export default function Login() {
   });
 
   async function onSubmit(values: z.infer<typeof signInSchema>) {
+    console.log(values);
     await login(values).then((res) => {
       if (!!res?.message) {
         toast({ title: res?.message, variant: "destructive" });
