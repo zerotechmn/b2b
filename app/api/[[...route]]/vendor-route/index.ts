@@ -5,32 +5,6 @@ import { db } from "../../database/client";
 import { address, vendor, wallet } from "../../database/schema";
 import createContract, { z_contract } from "./create-contract";
 
-const requestJson = {
-  name: "Vendor Name",
-  register: "123",
-  phoneNumber: "123",
-  email: "",
-  address: {
-    bagKhorooId: "123",
-    details: "123",
-    coordinate: "123",
-    phone_number: "123",
-  },
-  contract: {
-    expiresAt: "2022-10-10",
-    contractType: "POST_PAID",
-    paymentType: "MONTHLY",
-    period: "2022-10-10",
-    monthsAfter: 1,
-    paymentDateType: "SAME_DAY_EACH_MONTH",
-    sameDayEachMonth: 1,
-    weekOfMonth: 1,
-    dayOfWeek: 1,
-    daysAfter: 1,
-  },
-  managerEmail: "",
-};
-
 const vendorRoute = new Hono()
   .post(
     "/create",

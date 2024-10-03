@@ -16,41 +16,8 @@ import {
   paymentTypeEnum,
 } from "./../../database/schema";
 
-const testingJson = {
-  name: "Vendor Name",
-  register: "123",
-  phoneNumber: "123",
-  email: "",
-  address: {
-    bagKhorooId: "123",
-    details: "123",
-    coordinate: "123",
-    phone_number: "123",
-  },
-  contract: {
-    expiresAt: "2024-09-26T03:40:44Z",
-    ownership: "PERSONAL",
-    salesChannel: "RETAIL",
-    zone: "Баруун бүс",
-    localEntity: "Баруун бүс",
-    discount: 0,
-    penaltyChargePercentage: 0,
-    maximumLoanAmount: 0,
-    eReceipt: "BULK",
-    contractType: "POST_PAID",
-    paymentType: "MONTHLY",
-    period: "2024-09-26T03:40:44Z",
-    monthsAfter: 1,
-    paymentDateType: "SAME_DAY_EACH_MONTH",
-    sameDayEachMonth: 1,
-    weekOfMonth: 1,
-    dayOfWeek: 1,
-    daysAfter: 1,
-  },
-  managerEmail: "",
-};
-
 export const z_contract = z.object({
+  startDate: z.coerce.date(),
   expiresAt: z.coerce.date(),
   ownership: z.enum(ownershipTypeEnum.enumValues),
   salesChannel: z.enum(salesChannelEnum.enumValues),

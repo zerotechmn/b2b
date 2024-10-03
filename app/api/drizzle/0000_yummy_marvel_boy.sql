@@ -128,6 +128,7 @@ CREATE TABLE IF NOT EXISTS "user" (
 	"name" text NOT NULL,
 	"email" text NOT NULL,
 	"password" text,
+	"vendor_id" uuid,
 	"role_id" uuid NOT NULL,
 	"firstTimePassword" text,
 	"refreshToken" text DEFAULT 'hi' NOT NULL
@@ -145,6 +146,7 @@ CREATE TABLE IF NOT EXISTS "contract" (
 	"penalty_charge_percentage" integer DEFAULT 0 NOT NULL,
 	"maximum_loan_amount" integer DEFAULT 0 NOT NULL,
 	"e_receipt" "e_receipt_enum" NOT NULL,
+	"start_date" timestamp with time zone NOT NULL,
 	"expires_at" timestamp with time zone NOT NULL
 );
 --> statement-breakpoint

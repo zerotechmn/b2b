@@ -1,15 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { format, getDay, lastDayOfMonth, addDays, setMonth } from "date-fns";
+import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -17,8 +9,16 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { addDays, format, getDay, lastDayOfMonth, setMonth } from "date-fns";
 import { CalendarIcon } from "lucide-react";
+import { useEffect, useState } from "react";
 
 const weekdays = [
   "Ням гараг",

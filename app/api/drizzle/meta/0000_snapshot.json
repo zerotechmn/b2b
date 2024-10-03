@@ -1,5 +1,5 @@
 {
-  "id": "e65cc21d-598d-4db2-995f-d51c6d74407f",
+  "id": "afb1a213-6b16-40a3-a758-45773e4ba21a",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -367,6 +367,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "vendor_id": {
+          "name": "vendor_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
         "role_id": {
           "name": "role_id",
           "type": "uuid",
@@ -469,6 +475,12 @@
           "name": "e_receipt",
           "type": "e_receipt_enum",
           "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "start_date": {
+          "name": "start_date",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         },
