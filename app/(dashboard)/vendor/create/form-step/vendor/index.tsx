@@ -1,8 +1,5 @@
 "use client";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useToast } from "@/components/hooks/use-toast";
 import {
-  Form,
   FormControl,
   FormField,
   FormItem,
@@ -10,77 +7,74 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { signInSchema, vendorCreateSchema } from "@/lib/zod";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { useFormContext } from "react-hook-form";
 
 export default function CreateVendorForm() {
-  const { toast } = useToast();
-  const router = useRouter();
-
-  const form = useForm<z.infer<typeof vendorCreateSchema>>({
-    resolver: zodResolver(vendorCreateSchema),
-  });
-
-  async function onSubmit(values: z.infer<typeof vendorCreateSchema>) {
-    // await login(values).then((res) => {
-    //   if (!!res?.error) {
-    //     toast({ title: res?.error, variant: "destructive" });
-    //   } else {
-    //     router.replace("/");
-    //   }
-    // });
-  }
-  const {} = useForm();
+  const { register } = useFormContext();
 
   return (
     <div className="w-full">
       <div className="flex items-start justify-start">
         <div className="w-[600px] gap-0 mt-0">
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Байгууллагын нэр</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Байгууллагын нэр" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              {/* <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Байгууллагын регистрийн дугаар</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Байгууллагын нэр" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              /> */}
-              {/* <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Дансны үлдэгдэл</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Байгууллагын нэр" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              /> */}
-            </form>
-          </Form>
+          <form className="space-y-4">
+            <FormField
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Байгууллагын нэр</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Байгууллагын нэр"
+                      {...register("name")}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              name="register"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Байгууллагын регистрийн дугаар</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Байгууллагын регистрийн дугаар"
+                      {...register("register")}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Имайл</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Имайл" {...register("email")} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              name="phoneNumber"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Утасны дугаар</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Утасны дугаар"
+                      {...register("phoneNumber")}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </form>
         </div>
       </div>
     </div>
