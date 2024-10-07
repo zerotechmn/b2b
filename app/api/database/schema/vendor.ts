@@ -96,6 +96,10 @@ export const contract = pgTable("contract", {
     .default(0),
   maximumLoanAmount: integer("maximum_loan_amount").notNull().default(0),
   eReceipt: eReceiptEnum("e_receipt").notNull(),
+  startDate: timestamp("start_date", {
+    withTimezone: true,
+    mode: "date",
+  }).notNull(),
   expiresAt: timestamp("expires_at", {
     withTimezone: true,
     mode: "date",

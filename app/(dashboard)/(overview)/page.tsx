@@ -5,8 +5,6 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 export default async function Home() {
   // const me = await getUser();
 
-  // console.log("me", me);
-
   return (
     <Card>
       <CardHeader>

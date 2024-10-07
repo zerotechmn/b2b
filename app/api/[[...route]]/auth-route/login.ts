@@ -1,32 +1,15 @@
 import { eq } from "drizzle-orm";
-import { Context } from "hono";
+import { generateAccessToken, generateRefreshToken } from "../../../../lib/jwt";
 import { db } from "../../database/client";
 import { user } from "../../database/schema";
-import { generateAccessToken, generateRefreshToken } from "../../../../lib/jwt";
 import { comparePassword, hashPassword } from "../../tools/crypt";
+import { Context } from "hono";
 
 export default async function login(
-  c: Context<
-    {},
-    "/login",
-    {
-      in: {
-        json: {
-          email: string;
-          password: string;
-        };
-      };
-      out: {
-        json: {
-          email: string;
-          password: string;
-        };
-      };
-    }
-  >
+  c: Context,
+  email: string,
+  password: string
 ) {
-  const { email, password } = c.req.valid("json");
-
   const currentUser = await db.query.user.findFirst({
     where: eq(user.email, email),
   });

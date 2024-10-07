@@ -1,6 +1,7 @@
 import { PgEnum, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 import { user } from "./user";
 import { z } from "zod";
+import { relations } from "drizzle-orm";
 
 export * from "./user";
 export * from "./vendor";
@@ -31,3 +32,10 @@ export const passwordResetToken = pgTable("password_reset_token", {
     mode: "date",
   }).notNull(),
 });
+
+export const usersRelations = relations(passwordResetToken, ({ one }) => ({
+  user: one(user, {
+    fields: [passwordResetToken.userId],
+    references: [user.id],
+  }),
+}));

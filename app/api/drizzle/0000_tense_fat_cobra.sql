@@ -64,11 +64,20 @@ EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "role" (
+CREATE TABLE IF NOT EXISTS "card" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"name" text NOT NULL,
-	"platform" "platform_enum" NOT NULL,
-	"permissions" permission_enum[] NOT NULL
+	"cardholder_name" text NOT NULL,
+	"card_number" text NOT NULL,
+	"balance" text NOT NULL,
+	"vendor_id" uuid NOT NULL,
+	"current_limit" text NOT NULL,
+	"max_limit" text NOT NULL,
+	"limit_interval" text,
+	"pin" text NOT NULL,
+	"is_active" text NOT NULL,
+	"driver_id" uuid NOT NULL,
+	"created_at" text NOT NULL,
+	"updated_at" text NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "card_requests" (
@@ -117,6 +126,13 @@ CREATE TABLE IF NOT EXISTS "password_reset_token" (
 	"expires_at" timestamp with time zone NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "role" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"name" text NOT NULL,
+	"platform" "platform_enum" NOT NULL,
+	"permissions" permission_enum[] NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "session" (
 	"id" text PRIMARY KEY NOT NULL,
 	"user_id" uuid NOT NULL,
@@ -128,6 +144,7 @@ CREATE TABLE IF NOT EXISTS "user" (
 	"name" text NOT NULL,
 	"email" text NOT NULL,
 	"password" text,
+	"vendor_id" uuid,
 	"role_id" uuid NOT NULL,
 	"firstTimePassword" text,
 	"refreshToken" text DEFAULT 'hi' NOT NULL
@@ -145,6 +162,7 @@ CREATE TABLE IF NOT EXISTS "contract" (
 	"penalty_charge_percentage" integer DEFAULT 0 NOT NULL,
 	"maximum_loan_amount" integer DEFAULT 0 NOT NULL,
 	"e_receipt" "e_receipt_enum" NOT NULL,
+	"start_date" timestamp with time zone NOT NULL,
 	"expires_at" timestamp with time zone NOT NULL
 );
 --> statement-breakpoint

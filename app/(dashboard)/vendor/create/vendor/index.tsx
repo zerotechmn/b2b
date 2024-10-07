@@ -8,9 +8,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useFormContext } from "react-hook-form";
+import { VendorCreateFormSchema } from "../page";
 
 export default function CreateVendorForm() {
-  const { register } = useFormContext();
+  const { register } = useFormContext<VendorCreateFormSchema>();
 
   return (
     <div className="w-full">

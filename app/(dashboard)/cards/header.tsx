@@ -1,5 +1,6 @@
 "use client";
 
+import { contractTypeEnum, convertPgEnum } from "@/app/api/database/schema";
 import { PaymentDateSelector } from "@/components/payment-date-selector";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader } from "@/components/ui/card";
@@ -20,15 +21,12 @@ export default function Header() {
             <TextColumn title="Эзэмшигч" text="Билгүүн Мөнхбат" />
           </div>
           <div className="md:ml-auto sm:items-center justify-center flex">
-            {/* <Button variant="ghost">
+            <Button variant="ghost">
               <Plus className="md:mr-2 h-4 w-4" /> Цэнэглэх заавар
             </Button>
             <Button variant="outline" className="bg-primary text-white">
               <Plus className="md:mr-2 h-4 w-4" /> Толгой карт цэнэглэх
-            </Button> */}
-            <PaymentDateSelector
-              setPaymentSchedule={(e) => console.log("props:", e)}
-            />
+            </Button>
           </div>
         </div>
       </CardHeader>

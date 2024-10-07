@@ -21,7 +21,34 @@ const authRoute = new Hono()
         password: z.string(),
       })
     ),
-    login
+    async (c) => {
+      const { email, password } = c.req.valid("json");
+      return login(c, email, password);
+    }
+  )
+  .post(
+    "/logout",
+    zValidator(
+      "json",
+      z.object({
+        userId: z.string(),
+      })
+    ),
+    async (c) => {
+      const { userId } = c.req.valid("json");
+
+      await db
+        .delete(passwordResetToken)
+        .where(eq(passwordResetToken.userId, userId))
+        .catch(() => null);
+
+      return c.json(
+        {
+          message: "Logged out",
+        },
+        200
+      );
+    }
   )
   .post(
     "/token",
@@ -60,32 +87,62 @@ const authRoute = new Hono()
     }
   )
   .post(
+    "/verify-reset-token",
+    zValidator("json", z.object({ token: z.string(), userId: z.string() })),
+    async (c) => {
+      const { token, userId } = c.req.valid("json");
+
+      const resetToken = await verifyResetToken(token, userId);
+
+      if (!resetToken) {
+        return c.json({ message: "Invalid or expired token!" }, 400);
+      }
+
+      const resetUser = await db.query.user.findFirst({
+        where: eq(user.id, userId),
+      });
+
+      return c.json({ user: resetUser }, 200);
+    }
+  )
+  .post(
     "/reset-password",
     zValidator("json", z.object({ email: z.string() })),
     async (c) => {
       const { email } = c.req.valid("json");
 
-      const response = await db.query.user.findFirst({
+      const currentUser = await db.query.user.findFirst({
         where: eq(user.email, email),
       });
 
-      if (!response) {
+      if (!currentUser) {
         return c.json({ error: "User with this email not found!" }, 404);
       }
 
-      const resetToken = await createPasswordResetToken(response.id);
+      const resetToken = await createPasswordResetToken(currentUser.id);
 
       // TODO: Send email instead of returning the link
-      return c.json({ link: "http:/localhost:3000/" + resetToken }, 200);
+      return c.json(
+        {
+          link:
+            "/auth/change-password?token=" +
+            resetToken +
+            "&userId=" +
+            currentUser.id +
+            '&isReset="true',
+        },
+        200
+      );
 
       // TODO: Implement rate limiting based on IP address
     }
   )
   .post(
     "/reset-password/:token",
-    zValidator("json", z.object({ password: z.string() })),
+    zValidator("json", z.object({ password: z.string(), userId: z.string() })),
     async (c) => {
-      const { password } = c.req.valid("json");
+      const { password, userId } = c.req.valid("json");
+      const verificationToken = c.req.param("token");
 
       if (password.length < 8) {
         return c.json(
@@ -94,11 +151,7 @@ const authRoute = new Hono()
         );
       }
 
-      const verificationToken = c.req.param("token");
-      const tokenHash = await hashPassword(verificationToken);
-      const token = await db.query.passwordResetToken.findFirst({
-        where: eq(passwordResetToken.tokenHash, tokenHash),
-      });
+      const token = await verifyResetToken(verificationToken, userId);
 
       if (token) {
         await db
@@ -113,10 +166,10 @@ const authRoute = new Hono()
       const passwordHash = await hashPassword(password);
       await db
         .update(user)
-        .set({ password: passwordHash })
+        .set({ password: passwordHash, firstTimePassword: null })
         .where(eq(user.id, token.userId));
 
-      return c.json({ message: "Password reset successful" }, 302);
+      return c.json({ message: "Password reset successful" }, 200);
     }
   );
 
@@ -126,16 +179,37 @@ async function createPasswordResetToken(userId: string): Promise<string> {
   // invalidate all existing tokens
   await db
     .delete(passwordResetToken)
-    .where(eq(passwordResetToken.userId, user.id));
+    .where(eq(passwordResetToken.userId, userId));
 
   const tokenId = generateBase62Token(25);
   const tokenHash = await hashPassword(tokenId);
 
   await db.insert(passwordResetToken).values({
     userId,
-    tokenHash: tokenHash,
+    tokenHash,
     expiresAt: new Date(new Date().getTime() + 2 * 60 * 60 * 1000), // 2h from now.
   });
 
   return tokenId;
+}
+
+async function verifyResetToken(token: string, userId: string) {
+  const resetToken = await db.query.passwordResetToken.findFirst({
+    where: eq(passwordResetToken.userId, userId),
+  });
+
+  const isValidToken = await comparePassword(
+    token,
+    resetToken?.tokenHash || ""
+  );
+
+  if (
+    !isValidToken ||
+    !resetToken ||
+    !isWithinExpirationDate(resetToken?.expiresAt)
+  ) {
+    return null;
+  }
+
+  return resetToken;
 }

@@ -11,7 +11,7 @@ export const productEnum = pgEnum("product_enum", [
   "Авто хий",
 ]);
 
-export const card = pgTable("role", {
+export const card = pgTable("card", {
   id: uuid("id").primaryKey().defaultRandom(),
   cardholderName: text("cardholder_name").notNull(),
   cardNumber: text("card_number").notNull(),
@@ -39,7 +39,7 @@ export const productBalance = pgTable("product_balance", {
   updatedAt: text("updated_at").notNull(),
 });
 
-export const cardRequests = pgTable("card_requests", {
+export const cardRequest = pgTable("card_requests", {
   id: uuid("id").primaryKey().defaultRandom(),
   vendorId: uuid("vendor_id").notNull(),
   requestedCardCount: integer("requested_amount").notNull(),

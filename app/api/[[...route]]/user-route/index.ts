@@ -2,12 +2,12 @@ import { zValidator } from "@hono/zod-validator";
 import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
-import { db } from "../database/client";
-import { permissionEnum, platformEnum, user } from "../database/schema";
-import { hashPassword } from "../tools/crypt";
-import { platform } from "os";
+import { db } from "../../database/client";
+import { user } from "../../database/schema";
+import { hashPassword } from "../../tools/crypt";
+import inviteManager from "./invite-manager";
 
-const usersRoute = new Hono()
+const userRoute = new Hono()
   .get("/", (c) =>
     c.json({
       user: {
@@ -22,24 +22,13 @@ const usersRoute = new Hono()
       "json",
       z.object({
         email: z.string(),
+        vendorId: z.string(),
       })
     ),
     async (c) => {
-      const { email } = c.req.valid("json");
-
-      const newUsers = await db
-        .insert(user)
-        .values({
-          email,
-          name: "New User",
-          vendorId: "",
-          firstTimePassword: "",
-          refreshToken: "",
-          role: platformEnum.ADMIN,
-        })
-        .returning();
-
-      return c.json({ user: newUsers[0] }, 200);
+      const { email, vendorId } = c.req.valid("json");
+      const newManager = await inviteManager(email, vendorId);
+      return c.json({ manager: newManager }, 200);
     }
   )
   .post(
@@ -65,4 +54,4 @@ const usersRoute = new Hono()
   )
   .get("/:id", (c) => c.json(`get ${c.req.param("id")}`));
 
-export default usersRoute;
+export default userRoute;

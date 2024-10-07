@@ -1,52 +1,62 @@
 "use client";
+import { z_vendorCreateSchema } from "@/app/api/[[...route]]/vendor-route";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import { Building2, CalendarPlus, CassetteTape, PlusIcon } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
-import CreateContract from "./form-step/contract";
-import CustomerForm from "./customer-form";
-import { Form, useForm, FormProvider } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { Building2, CalendarPlus, CassetteTape, Router } from "lucide-react";
+import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
-import { Button } from "@/components/ui/button";
-import { z_vendorCreateSchema } from "@/app/api/[[...route]]/vendor-route";
-import CreateVendorForm from "./form-step/vendor";
+import CustomerForm from "./customer-form";
+import { api } from "@/lib/api";
+import CreateContract from "./contract";
+import CreateVendorForm from "./vendor";
+import { useToast } from "@/components/hooks/use-toast";
+import { useRouter } from "next/navigation";
+
+export type VendorCreateFormSchema = z.infer<typeof z_vendorCreateSchema>;
 
 export default function Page() {
+  const { toast } = useToast();
+  const router = useRouter();
+
   const form = useForm<z.infer<typeof z_vendorCreateSchema>>({
+    defaultValues: {},
     // resolver: zodResolver(z_vendorCreateSchema),
   });
 
-  // const form = useForm();
-  function onSubmit2222(values: z.infer<typeof z_vendorCreateSchema>) {
-    console.log("Dataaa");
-    console.log(values);
-
-    // const response = await api.vendor.create
-    //   .$post({
-    //     json: values,
-    //   })
-    //   .then((res) => {
-    //     console.log(res);
-    //   });
-  }
-
-  ("use server");
-  const onSubmit = (data: z.infer<typeof z_vendorCreateSchema>) => {
-    console.log(data);
+  const onSubmit = async (data: z.infer<typeof z_vendorCreateSchema>) => {
+    try {
+      const response = await api.vendor.create
+        .$post({
+          json: data,
+        })
+        .then((res) => {
+          if (res.status == 200) {
+            toast({ title: "Амжилттай бүртгүүллээ", variant: "default" });
+            router.replace("/vendor");
+          }
+        });
+    } catch (e) {
+      toast({ title: "Алдаа гарлаа", variant: "destructive" });
+    }
   };
 
   return (
     <main className="m-8">
       <FormProvider {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          onError={(e) => console.log("form error", e)}
+          className="space-y-4"
+        >
           <div className="">
             <div className="flex flex-row justify-between">
-              <div>
+              <div className="pb-8">
                 <p className="text-xl text-bold">
                   Байгууллагын гэрээний дэлгэрэнгүй мэдээлэл
                 </p>
-                <p className="pb-8">Sub title</p>
+                <p className="text-sm text-slate-500">Байгууллага бүртгэх</p>
               </div>
               <div>
                 <Button type="submit" className="w-200">
@@ -63,12 +73,11 @@ export default function Page() {
             <TabsList className="flex flex-col w-full w-[260px] rounded-md bg-white">
               <TabsTrigger
                 className={cn(
-                  "data-[state=active]:bg-surface-surface3 w-full py-3 px-0  justify-start items-start"
+                  "data-[state=active]:bg-surface-surface3 w-full py-3 px-0 justify-start items-start"
                 )}
                 value="vendor"
               >
                 <div className="flex">
-                  <div className="bg-primary w-1"></div>
                   <div className="pl-4">
                     <Building2 className="h-5" />
                   </div>
@@ -83,7 +92,6 @@ export default function Page() {
                 value="geree"
               >
                 <div className="flex">
-                  <div className="bg-primary w-1"></div>
                   <div className="pl-4">
                     <CassetteTape className="h-5" />
                   </div>
@@ -97,7 +105,6 @@ export default function Page() {
                 value="hariltsagch"
               >
                 <div className="flex">
-                  <div className="bg-primary w-1"></div>
                   <div className="pl-4">
                     <CalendarPlus className="h-5" />
                   </div>
@@ -108,7 +115,6 @@ export default function Page() {
             <TabsContent className="w-full ml-8" value="vendor">
               <CreateVendorForm />
             </TabsContent>
-
             <TabsContent className="w-full ml-8" value="geree">
               <CreateContract />
             </TabsContent>

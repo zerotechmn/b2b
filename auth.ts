@@ -23,15 +23,11 @@ export const authConfig = {
       authorize: async (credentials) => {
         const { email, password } = await signInSchema.parseAsync(credentials);
 
-        console.log("hjuhhh");
-
         const response = await api.authenticate.login.$post({
           json: { email, password },
         });
 
-        if (response.status === 404) {
-          return null;
-        }
+        if (response.status === 404) return null;
 
         const data = await response.json();
 
@@ -46,6 +42,7 @@ export const authConfig = {
         token.email = user.email;
         token.name = user.name;
         token.accessToken = user.accessToken;
+        token.firstTimePassword = user.firstTimePassword;
       }
 
       return token;
@@ -53,6 +50,7 @@ export const authConfig = {
     session: ({ session, user }) => {
       if (user) {
         session.user.accessToken = user.accessToken;
+        session.user.firstTimePassword = user.firstTimePassword;
       }
 
       return session;

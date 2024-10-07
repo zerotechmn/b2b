@@ -5,9 +5,10 @@ import { cors } from "hono/cors";
 import { handle } from "hono/vercel";
 import { jwtMiddleware } from "../../../lib/jwt";
 import authRoute from "./auth-route";
-import usersRoute from "./users-route";
+import usersRoute from "./user-route";
 import vendorRoute from "./vendor-route";
 
+// Can run on the edge if we need to.
 // export const runtime = "edge";
 
 type Bindings = {
@@ -31,7 +32,7 @@ app.use(
 );
 
 // Define which routes are protected by JWT
-app.use("/users/*", jwtMiddleware);
+// app.use("/users/*", jwtMiddleware);
 
 const route = app
   .route("/authenticate", authRoute)

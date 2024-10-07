@@ -11,7 +11,7 @@ export function isWithinExpirationDate(expirationDate: Date): boolean {
 
 export function currencyFormat(num: number) {
   const formated =
-    num.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") + "₮";
+    num.toFixed(2)?.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") + "₮";
 
   return formated;
 }

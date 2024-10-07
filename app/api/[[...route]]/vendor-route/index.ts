@@ -1,8 +1,6 @@
-"use server";
-
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
-import { z, object, string } from "zod";
+import { z } from "zod";
 import { db } from "../../database/client";
 import { address, vendor, wallet } from "../../database/schema";
 import createContract, { z_contract } from "./create-contract";
@@ -24,6 +22,7 @@ export const z_vendorCreateSchema = z.object({
 
 const vendorRoute = new Hono()
   .post("/create", zValidator("json", z_vendorCreateSchema), async (c) => {
+    console.log("vendor create");
     const {
       name,
       register,
@@ -32,6 +31,8 @@ const vendorRoute = new Hono()
       address: addressData,
       contract: contractData,
     } = c.req.valid("json");
+
+    console.log("props", name, addressData, contractData);
 
     const createdVendor = await db.transaction(async (tx) => {
       const newAddress = await tx
