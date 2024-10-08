@@ -9,9 +9,17 @@ import {
 import { Input } from "@/components/ui/input";
 import { useFormContext } from "react-hook-form";
 import { VendorCreateFormSchema } from "../page";
+import { z } from "zod";
+import { z_vendorCreateSchema } from "@/app/api/[[...route]]/vendor-route";
 
-export default function CreateVendorForm() {
-  const { register } = useFormContext<VendorCreateFormSchema>();
+export default function CreateVendorForm({ errorsww }: { errorsww: any }) {
+  // const {} = useFormContext<VendorCreateFormSchema>();
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors, isSubmitting },
+  } = useFormContext<VendorCreateFormSchema>();
 
   return (
     <div className="w-full">
@@ -33,6 +41,8 @@ export default function CreateVendorForm() {
                 </FormItem>
               )}
             />
+            {errors.name && <span>{errors.name.message}</span>}
+
             <FormField
               name="register"
               render={({ field }) => (

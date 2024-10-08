@@ -8,6 +8,8 @@ export const signInSchema = object({
 });
 
 export type VendorCreateSchema = z.infer<typeof z_vendorCreateSchema>;
+
+
 export const changePasswordSchema = object({
   newPassword: string().min(8),
   repeatPassword: string().min(8),
