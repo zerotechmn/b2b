@@ -13,7 +13,7 @@ export async function generateAccessToken(user: any) {
   return await sign(
     {
       ...user,
-      exp: Math.floor(Date.now() / 1000) + 60 * 5, // Token expires in 5 minutes
+      exp: Math.floor(Date.now() / 1000) + 60 * 60, // Token expires in 60 minutes
     },
     process.env.JWT_SECRET!
   );

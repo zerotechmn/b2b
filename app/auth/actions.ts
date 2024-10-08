@@ -17,7 +17,7 @@ export async function login(credentials: z.infer<typeof signInSchema>) {
 
 export async function logout() {
   try {
-    await signOut();
+    await signOut({ redirectTo: "/auth/login" });
   } catch (error) {
     return;
   }

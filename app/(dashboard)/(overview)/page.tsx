@@ -1,10 +1,7 @@
-import { PaymentDateSelector } from "@/components/payment-date-selector";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 export default async function Home() {
-  // const me = await getUser();
-
   return (
     <Card>
       <CardHeader>

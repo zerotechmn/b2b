@@ -1,14 +1,4 @@
-import {
-  Bell,
-  CircleUser,
-  Contact2,
-  HelpCircle,
-  LogOut,
-  Menu,
-} from "lucide-react";
-import Link from "next/link";
-
-import { signOut } from "@/auth";
+import { auth } from "@/auth";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -20,15 +10,23 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Bell, CircleUser, LogOut, Menu } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
+import AdminMenu from "./admin-menu";
+import BottomMenu from "./bottom-menu";
 import { SheetMenu, SheetMenuBottom } from "./sheet-menu";
-import MenuItem, { MenuItemBottom } from "./menu-item";
+import VendorMenu from "./vendor-menu";
 
 interface Props {
   children: React.ReactNode;
 }
 
-export function Dashboard({ children }: Props) {
+export async function Dashboard({ children }: Props) {
+  const { user } = (await auth()) || {};
+
+  console.log("user", user);
+
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
       <div className="hidden border-r bg-muted/40 md:block md:overflow-hidden flex-none h-screen sticky top-0">
@@ -48,32 +46,19 @@ export function Dashboard({ children }: Props) {
               <Bell className="h-4 w-4" />
             </Button>
           </div>
+
           <div className="flex-1">
-            <nav className="grid items-start text-sm font-medium  mt-6">
-              <MenuItem />
+            <nav className="grid items-start gap-1 px-2 text-sm font-medium lg:px-4">
+              {user?.role?.platform === "ADMIN" ? (
+                <AdminMenu />
+              ) : (
+                <VendorMenu />
+              )}
             </nav>
           </div>
 
           <Separator />
-
-          <div className="p-4 text-sm font-medium">
-            {/* <MenuItem href="/" title="Тусламж" Icon={HelpCircle} />
-            <MenuItem href="/" title="Холбоо барих" Icon={Contact2} /> */}
-
-            <MenuItemBottom />
-
-            <form
-              action={async (e) => {
-                "use server";
-                await signOut();
-              }}
-            >
-              <button className="flex items-center gap-3 rounded-lg px-3 py-2 text-destructive transition-all hover:text-destructive/80">
-                <LogOut className="h-4 w-4" />
-                Гарах
-              </button>
-            </form>
-          </div>
+          <BottomMenu />
         </div>
       </div>
       <div className="flex flex-col overflow-x-scroll">
@@ -131,27 +116,33 @@ export function Dashboard({ children }: Props) {
               </nav>
             </SheetContent>
           </Sheet>
-          <div className="w-full flex flex-1 gap-4 items-center">
-            <h1 className="text-base lg:text-xl font-semibold mr-auto">
-              Байгууллагын Мэдээлэл
-            </h1>
+          {user?.role?.platform === "ADMIN" ? (
+            <div>admin</div>
+          ) : (
+            <div className="w-full flex flex-1 gap-4 items-center">
+              <h1 className="text-base lg:text-xl font-semibold mr-auto">
+                Байгууллагын Мэдээлэл
+              </h1>
 
-            <div className="hidden lg:flex flex-col">
-              <span className="text-xs text-muted-foreground">
-                РЕГИСТРИЙН ДУГААР
-              </span>
-              <span className="text-sm font-medium">1849201</span>
-            </div>
+              <div className="hidden lg:flex flex-col">
+                <span className="text-xs text-muted-foreground">
+                  РЕГИСТРИЙН ДУГААР
+                </span>
+                <span className="text-sm font-medium">
+                  {user?.vendor?.register}
+                </span>
+              </div>
 
-            <div className="hidden md:flex flex-col">
-              <span className="text-xs text-muted-foreground">
-                БАЙГУУЛЛАГЫН НЭР
-              </span>
-              <span className="text-sm font-medium">
-                Прокрафт Дизайн Агентлаг
-              </span>
+              <div className="hidden md:flex flex-col">
+                <span className="text-xs text-muted-foreground">
+                  БАЙГУУЛЛАГЫН НЭР
+                </span>
+                <span className="text-sm font-medium">
+                  {user?.vendor?.name}
+                </span>
+              </div>
             </div>
-          </div>
+          )}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="icon" className="rounded-full">

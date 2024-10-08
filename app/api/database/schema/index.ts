@@ -33,9 +33,12 @@ export const passwordResetToken = pgTable("password_reset_token", {
   }).notNull(),
 });
 
-export const usersRelations = relations(passwordResetToken, ({ one }) => ({
-  user: one(user, {
-    fields: [passwordResetToken.userId],
-    references: [user.id],
-  }),
-}));
+export const passwordResetTokenRelations = relations(
+  passwordResetToken,
+  ({ one }) => ({
+    user: one(user, {
+      fields: [passwordResetToken.userId],
+      references: [user.id],
+    }),
+  })
+);

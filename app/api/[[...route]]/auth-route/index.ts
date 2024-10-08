@@ -166,7 +166,7 @@ const authRoute = new Hono()
       const passwordHash = await hashPassword(password);
       await db
         .update(user)
-        .set({ password: passwordHash, firstTimePassword: null })
+        .set({ password: passwordHash })
         .where(eq(user.id, token.userId));
 
       return c.json({ message: "Password reset successful" }, 200);
@@ -175,7 +175,10 @@ const authRoute = new Hono()
 
 export default authRoute;
 
-async function createPasswordResetToken(userId: string): Promise<string> {
+export async function createPasswordResetToken(
+  userId: string,
+  expiresAfter?: number
+): Promise<string> {
   // invalidate all existing tokens
   await db
     .delete(passwordResetToken)
@@ -187,7 +190,9 @@ async function createPasswordResetToken(userId: string): Promise<string> {
   await db.insert(passwordResetToken).values({
     userId,
     tokenHash,
-    expiresAt: new Date(new Date().getTime() + 2 * 60 * 60 * 1000), // 2h from now.
+    expiresAt: new Date(
+      new Date().getTime() + (expiresAfter || 2 * 60 * 60 * 1000)
+    ), // 2h from now.
   });
 
   return tokenId;

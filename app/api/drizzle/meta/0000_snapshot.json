@@ -1,5 +1,9 @@
 {
+<<<<<<< HEAD
   "id": "3c076c3f-9808-493b-9348-67d1c7fad053",
+=======
+  "id": "5f9aa7a7-e740-423e-ad85-c66fd8d8093a",
+>>>>>>> 2b7bf6037c422ee93a44c90ff5a708e8d84778bf
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -77,13 +81,13 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "text",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "text",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         }
@@ -180,13 +184,15 @@
           "name": "available_stations",
           "type": "uuid[]",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "default": []
         },
         "created_at": {
           "name": "created_at",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "default": "'now()'"
         },
         "updated_at": {
           "name": "updated_at",
@@ -467,12 +473,6 @@
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
-        },
-        "firstTimePassword": {
-          "name": "firstTimePassword",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
         },
         "refreshToken": {
           "name": "refreshToken",

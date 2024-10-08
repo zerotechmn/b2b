@@ -25,7 +25,6 @@ export const user = pgTable("user", {
   password: text("password"),
   vendorId: uuid("vendor_id"),
   roleId: uuid("role_id").notNull(),
-  firstTimePassword: text("firstTimePassword"),
   refreshToken: text("refreshToken").notNull().default("hi"),
 });
 
