@@ -42,7 +42,7 @@ const vendorRoute = new Hono()
             bagKhorooId: addressData.bagKhorooId,
             details: addressData.details,
             coordinate: addressData.coordinate,
-            phone_number: addressData.phone_number,
+            phoneNumber: addressData.phone_number,
           })
           .returning();
 

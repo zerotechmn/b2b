@@ -1,5 +1,5 @@
 {
-  "id": "5f9aa7a7-e740-423e-ad85-c66fd8d8093a",
+  "id": "c44f6f9c-a36d-41fc-9e17-f22b9bf8cbbd",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -29,7 +29,7 @@
         },
         "balance": {
           "name": "balance",
-          "type": "text",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
@@ -41,13 +41,13 @@
         },
         "current_limit": {
           "name": "current_limit",
-          "type": "text",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
         "max_limit": {
           "name": "max_limit",
-          "type": "text",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
@@ -59,13 +59,13 @@
         },
         "pin": {
           "name": "pin",
-          "type": "text",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
         "is_active": {
           "name": "is_active",
-          "type": "text",
+          "type": "boolean",
           "primaryKey": false,
           "notNull": true
         },
@@ -73,7 +73,7 @@
           "name": "driver_id",
           "type": "uuid",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "created_at": {
           "name": "created_at",
@@ -130,13 +130,13 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "text",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "text",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         }
@@ -185,14 +185,13 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "text",
+          "type": "timestamp with time zone",
           "primaryKey": false,
-          "notNull": true,
-          "default": "'now()'"
+          "notNull": true
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "text",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         }
@@ -251,7 +250,13 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "text",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         }
@@ -444,13 +449,19 @@
           "name": "name",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
+        },
+        "phone": {
+          "name": "phone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "email": {
           "name": "email",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "password": {
           "name": "password",
@@ -474,8 +485,7 @@
           "name": "refreshToken",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
-          "default": "'hi'"
+          "notNull": false
         }
       },
       "indexes": {},
@@ -785,7 +795,8 @@
       "schema": "public",
       "values": [
         "ADMIN",
-        "VENDOR"
+        "VENDOR",
+        "DRIVER"
       ]
     },
     "public.contract_type_enum": {

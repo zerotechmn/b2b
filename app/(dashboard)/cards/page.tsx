@@ -5,8 +5,22 @@ import Header from "./header";
 import { BreadcrumbCustom, SubHeader } from "./sub-link";
 import { data } from "./make-data";
 import { DataTable } from "@/components/data-table";
+import { CardModalComponent } from "@/components/card-modal";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
-export default async function Page() {
+export default function Page() {
   const listTitle: SubHeader[] = [
     {
       id: "1",

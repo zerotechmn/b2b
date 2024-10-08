@@ -1,12 +1,13 @@
 import { zValidator } from "@hono/zod-validator";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { Hono } from "hono";
+import { decode } from "hono/jwt";
 import { z } from "zod";
+import { DRIVER_ROLENAME } from "../../constants";
 import { db } from "../../database/client";
-import { user } from "../../database/schema";
+import { convertPgEnum, platformEnum, role, user } from "../../database/schema";
 import { hashPassword } from "../../tools/crypt";
 import inviteManager from "./invite-manager";
-import { decode } from "hono/jwt";
 
 const userRoute = new Hono()
   .get("/me", (c) => {
@@ -42,6 +43,74 @@ const userRoute = new Hono()
     async (c) => {
       const { email, vendorId } = c.req.valid("json");
       return await inviteManager(c, email, vendorId);
+    }
+  )
+  .post(
+    "/invite-driver",
+    zValidator(
+      "json",
+      z.object({
+        phoneNumber: z.string(),
+        vendorId: z.string(),
+      })
+    ),
+    async (c) => {
+      const { phoneNumber, vendorId } = c.req.valid("json");
+
+      const dbUser = await db.query.user.findFirst({
+        where: and(eq(user.phone, phoneNumber)),
+      });
+
+      if (dbUser) {
+        return c.json({ error: "User already exists" }, 400);
+      }
+
+      let driverRole = await db.query.role
+        .findFirst({
+          where: eq(role.name, DRIVER_ROLENAME),
+        })
+        .then((res) => res);
+
+      // TODO: Delete later because this role should always exist
+      if (!driverRole) {
+        const newRole = await db
+          .insert(role)
+          .values({
+            name: DRIVER_ROLENAME,
+            platform: convertPgEnum(platformEnum).DRIVER,
+            permissions: [],
+          })
+          .returning();
+        driverRole = newRole[0];
+      }
+
+      const newUsers = await db
+        .insert(user)
+        .values({
+          phone: phoneNumber,
+          name: "New User",
+          vendorId,
+          roleId: driverRole.id,
+        })
+        .returning();
+
+      // Send SMS
+
+      return c.json({ user: newUsers[0] }, 200);
+    }
+  )
+  .post(
+    "/create-driver",
+    zValidator(
+      "json",
+      z.object({
+        phoneNumber: z.string(),
+        vendorId: z.string(),
+      })
+    ),
+    async (c) => {
+      const { phoneNumber, vendorId } = c.req.valid("json");
+      // return await inviteManager(c, email, vendorId);
     }
   )
   .post(
