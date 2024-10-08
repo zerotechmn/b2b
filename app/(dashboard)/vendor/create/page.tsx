@@ -4,22 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import {
-  Building2,
-  CalendarPlus,
-  CassetteTape,
-  Loader,
-  Router,
-} from "lucide-react";
+import { Building2, CalendarPlus, CassetteTape, Router } from "lucide-react";
 import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
 import CustomerForm from "./customer-form";
+import { api } from "@/lib/api";
 import CreateContract from "./contract";
 import CreateVendorForm from "./vendor";
 import { useToast } from "@/components/hooks/use-toast";
 import { useRouter } from "next/navigation";
-import { submitForm } from "./validation";
-import { api } from "@/lib/api";
 
 export type VendorCreateFormSchema = z.infer<typeof z_vendorCreateSchema>;
 
@@ -32,32 +25,20 @@ export default function Page() {
     // resolver: zodResolver(z_vendorCreateSchema),
   });
 
-  const {
-    formState: { errors, isSubmitting },
-  } = form;
-
   const onSubmit = async (data: z.infer<typeof z_vendorCreateSchema>) => {
-    const { data: success, errors } = await submitForm(data);
-
-    if (errors) {
+    try {
+      const response = await api.vendor.create
+        .$post({
+          json: data,
+        })
+        .then((res) => {
+          if (res.status == 200) {
+            toast({ title: "Амжилттай бүртгүүллээ", variant: "default" });
+            router.replace("/vendor");
+          }
+        });
+    } catch (e) {
       toast({ title: "Алдаа гарлаа", variant: "destructive" });
-    }
-
-    if (success) {
-      try {
-        const response = await api.vendor.create
-          .$post({
-            json: data,
-          })
-          .then((res) => {
-            if (res.status == 200) {
-              toast({ title: "Амжилттай бүртгүүллээ", variant: "default" });
-              router.replace("/vendor");
-            }
-          });
-      } catch (e) {
-        toast({ title: "Алдаа гарлаа", variant: "destructive" });
-      }
     }
   };
 
@@ -78,8 +59,8 @@ export default function Page() {
                 <p className="text-sm text-slate-500">Байгууллага бүртгэх</p>
               </div>
               <div>
-                <Button type="submit" className="p-6">
-                  {isSubmitting ? <Loader /> : "Хадгалах"}
+                <Button type="submit" className="w-200">
+                  Хадгалах
                 </Button>
               </div>
             </div>
@@ -132,7 +113,7 @@ export default function Page() {
               </TabsTrigger>
             </TabsList>
             <TabsContent className="w-full ml-8" value="vendor">
-              <CreateVendorForm errorsww={errors} />
+              <CreateVendorForm />
             </TabsContent>
             <TabsContent className="w-full ml-8" value="geree">
               <CreateContract />

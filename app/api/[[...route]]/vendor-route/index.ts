@@ -6,18 +6,18 @@ import { address, vendor, wallet } from "../../database/schema";
 import createContract, { z_contract } from "./create-contract";
 
 export const z_vendorCreateSchema = z.object({
-  name: z.string().min(2, 'Нэр хамгийн багадаа 2 тэмдэгтээс их байна'),
-  register: z.string().min(2,'Байгууллагийн регистр хамгийн багадаа 2 тэмдэгтээс их байна'),
-  phoneNumber: z.string().min(8, 'Утасны дугаар 8 оронтой байх ёстой'),
-  email: z.string().email('Имайл формат буруу байна'),
+  name: z.string(),
+  register: z.string(),
+  phoneNumber: z.string(),
+  email: z.string(),
   address: z.object({
-    bagKhorooId: z.string().min(2,'Байгууллагийн регистр хамгийн багадаа 2 тэмдэгтээс их байна'),
-    details: z.string().min(2, 'Дэлгэрэнгүй хаяг 2 тэмдэгтээс их байна'),
-    coordinate: z.string().min(2, '2 тэмдэгтээс их байна'),
-    phone_number: z.string().min(8, 'Утасны дугаар 8 оронтой байх ёстой'),
+    bagKhorooId: z.string(),
+    details: z.string(),
+    coordinate: z.string(),
+    phone_number: z.string(),
   }),
   contract: z_contract,
-  managerEmail: z.string().email('Имайл формат буруу байна'),
+  managerEmail: z.string(),
 });
 
 const vendorRoute = new Hono()
