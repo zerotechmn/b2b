@@ -17,8 +17,8 @@ import {
 } from "./../../database/schema";
 
 export const z_contract = z.object({
-  startDate: z.coerce.date(),
-  expiresAt: z.coerce.date(),
+  // startDate: z.coerce.date(),
+  // expiresAt: z.coerce.date(),
   ownership: z.enum(ownershipTypeEnum.enumValues),
   salesChannel: z.enum(salesChannelEnum.enumValues),
   zone: z.enum(zoneEnum.enumValues),
@@ -29,13 +29,13 @@ export const z_contract = z.object({
   eReceipt: z.enum(eReceiptEnum.enumValues),
   contractType: z.enum(contractTypeEnum.enumValues),
   paymentType: z.enum(paymentTypeEnum.enumValues),
-  period: z.coerce.date(),
-  monthsAfter: z.number(),
-  paymentDateType: z.enum(paymentDateTypeEnum.enumValues),
+  // period: z.coerce.date(),
+  monthsAfter: z.number().optional(),
+  paymentDateType: z.enum(paymentDateTypeEnum.enumValues).optional(),
   sameDayEachMonth: z.number().optional(),
   weekOfMonth: z.number().optional(),
   dayOfWeek: z.number().optional(),
-  daysAfter: z.number(),
+  daysAfter: z.number().optional(),
 });
 
 interface Props extends z.infer<typeof z_contract> {
@@ -45,7 +45,7 @@ interface Props extends z.infer<typeof z_contract> {
 export default async function createContract({
   vendorId,
   paymentType,
-  period,
+  // period,
   monthsAfter,
   paymentDateType,
   sameDayEachMonth,
@@ -59,6 +59,8 @@ export default async function createContract({
       .insert(contract)
       .values({
         vendorId,
+        startDate: new Date(),
+        expiresAt: new Date(),
         ...rest,
       })
       .returning();
@@ -75,9 +77,9 @@ export default async function createContract({
       .insert(paymentDateEachMonth)
       .values({
         paymentPlanId: newPaymentPlan[0].id,
-        period,
+        period: new Date(),
         monthsAfter,
-        paymentDateType,
+        paymentDateType: paymentDateType!,
         sameDayEachMonth,
         weekOfMonth,
         dayOfWeek,

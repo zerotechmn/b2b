@@ -30,6 +30,8 @@ export default function Login() {
   });
 
   async function onSubmit(values: z.infer<typeof signInSchema>) {
+    console.log(values);
+
     await login(values).then((res) => {
       if (!!res?.message) {
         toast({ title: res?.message, variant: "destructive" });
@@ -47,7 +49,7 @@ export default function Login() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>E-mail</FormLabel>
+              <FormLabel>Имайл</FormLabel>
               <FormControl>
                 <Input placeholder="email@example.com" {...field} />
               </FormControl>

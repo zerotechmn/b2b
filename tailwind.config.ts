@@ -59,6 +59,10 @@ const config = {
           surface1: "hsla(var(--surface-surface1)) ",
           surface2: "hsla(var(--surface-surface2))",
           surface3: "hsla(var(--surface-surface3))",
+          disabled: "hsla(var(--surface-dusabled))",
+        },
+        stroke: {
+          dark: "hsla(var(--stroke-dark))",
         },
       },
       borderRadius: {

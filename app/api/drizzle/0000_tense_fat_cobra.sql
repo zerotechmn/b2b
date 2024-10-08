@@ -11,7 +11,7 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- CREATE TYPE "public"."platform_enum" AS ENUM('ADMIN', 'VENDOR', 'DRIVER');
+ CREATE TYPE "public"."platform_enum" AS ENUM('ADMIN', 'VENDOR');
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -68,12 +68,11 @@ CREATE TABLE IF NOT EXISTS "card" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"cardholder_name" text NOT NULL,
 	"card_number" text NOT NULL,
-	"balance" integer NOT NULL,
+	"balance" text NOT NULL,
 	"vendor_id" uuid NOT NULL,
-	"current_limit" integer NOT NULL,
-	"max_limit" integer NOT NULL,
+	"current_limit" text NOT NULL,
+	"max_limit" text NOT NULL,
 	"limit_interval" text,
-<<<<<<< HEAD:app/api/drizzle/0000_jazzy_living_mummy.sql
 	"pin" text NOT NULL,
 	"is_active" text NOT NULL,
 	"driver_id" uuid NOT NULL,
@@ -81,11 +80,6 @@ CREATE TABLE IF NOT EXISTS "card" (
 	"created_at" text NOT NULL,
 	"updated_at" text NOT NULL
 ========
-=======
-	"pin" integer NOT NULL,
-	"is_active" boolean NOT NULL,
-	"driver_id" uuid,
->>>>>>> main:app/api/drizzle/0000_flawless_chat.sql
 	"created_at" timestamp with time zone NOT NULL,
 	"updated_at" timestamp with time zone NOT NULL
 >>>>>>>> 2b7bf6037c422ee93a44c90ff5a708e8d84778bf:app/api/drizzle/0000_jazzy_living_mummy.sql
@@ -97,8 +91,8 @@ CREATE TABLE IF NOT EXISTS "card_requests" (
 	"requested_amount" integer NOT NULL,
 	"status" text NOT NULL,
 	"requested_at" text NOT NULL,
-	"created_at" timestamp with time zone NOT NULL,
-	"updated_at" timestamp with time zone NOT NULL
+	"created_at" text NOT NULL,
+	"updated_at" text NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "product_balance" (
@@ -107,8 +101,8 @@ CREATE TABLE IF NOT EXISTS "product_balance" (
 	"product" "product_enum" NOT NULL,
 	"balance" text NOT NULL,
 	"available_stations" uuid[] DEFAULT  NOT NULL,
-	"created_at" timestamp with time zone NOT NULL,
-	"updated_at" timestamp with time zone NOT NULL
+	"created_at" text DEFAULT 'now()' NOT NULL,
+	"updated_at" text NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "statement" (
@@ -119,8 +113,7 @@ CREATE TABLE IF NOT EXISTS "statement" (
 	"to" integer NOT NULL,
 	"details" text NOT NULL,
 	"station_id" uuid NOT NULL,
-	"created_at" timestamp with time zone NOT NULL,
-	"updated_at" timestamp with time zone NOT NULL
+	"created_at" text NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "address" (
@@ -153,13 +146,12 @@ CREATE TABLE IF NOT EXISTS "session" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "user" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"name" text,
-	"phone" text,
-	"email" text,
+	"name" text NOT NULL,
+	"email" text NOT NULL,
 	"password" text,
 	"vendor_id" uuid,
 	"role_id" uuid NOT NULL,
-	"refreshToken" text
+	"refreshToken" text DEFAULT 'hi' NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "contract" (

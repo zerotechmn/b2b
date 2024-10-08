@@ -38,6 +38,7 @@ type PaymentScheduleType =
 interface PaymentSchedule {
   frequency: "MONTHLY" | "DAYS_AFTER";
   type?: PaymentScheduleType;
+  
   dayOfMonth?: number;
   weekOfMonth?: number;
   dayOfWeek?: number;
@@ -183,7 +184,7 @@ export function PaymentDateSelector({
           className="w-full justify-between"
         >
           {formatSelectedDate()}
-          <CalendarIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          <CalendarIcon className="ml-2 h-4 w-4 shrink-0 opacity-50 " />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0" align="start">

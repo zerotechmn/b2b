@@ -1,17 +1,14 @@
-import IconButton from "@/components/dashboard/icon-button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import Header from "./header";
 import { columns } from "./table-columns";
-
-import { DataTable } from "@/components/data-table";
+import IconButton from "@/components/dashboard/icon-button";
 import { data } from "./make-data";
+import { DataTable } from "@/components/data-table";
+import { CreateVendor, UpdateInvoice } from "./buttons";
 
-export default function Page() {
+export default async function Page() {
+  // auth
   return (
     <div className="bg-white">
-      <Header />
-      {/* <BreadcrumbCustom list={listTitle} /> */}
-
       <div className="m-8 bg-white">
         <Card className="bg-white">
           <CardHeader className="bg-headerTable">
@@ -24,7 +21,7 @@ export default function Page() {
                   <IconButton iconName="settings" title="Файл татах" />
                 </div>
                 <div className="ml-4">
-                  <IconButton iconName="settings" title="Файл оруулах" />
+                  <CreateVendor />
                 </div>
               </div>
             </div>
