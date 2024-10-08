@@ -18,7 +18,7 @@ export const address = pgTable("address", {
   bagKhorooId: text("bag_khoroo_id").notNull(),
   details: text("details").notNull(),
   coordinate: text("email").notNull(),
-  phone_number: text("phone_number"),
+  phoneNumber: text("phone_number"),
 });
 
 export const passwordResetToken = pgTable("password_reset_token", {

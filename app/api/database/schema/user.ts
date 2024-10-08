@@ -9,7 +9,11 @@ export const permissionEnum = pgEnum("permission_enum", [
   "DELETE_CARD",
 ]);
 
-export const platformEnum = pgEnum("platform_enum", ["ADMIN", "VENDOR"]);
+export const platformEnum = pgEnum("platform_enum", [
+  "ADMIN",
+  "VENDOR",
+  "DRIVER",
+]);
 
 export const role = pgTable("role", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -20,12 +24,13 @@ export const role = pgTable("role", {
 
 export const user = pgTable("user", {
   id: uuid("id").primaryKey().defaultRandom(),
-  name: text("name").notNull(),
-  email: text("email").notNull(),
+  name: text("name"),
+  phone: text("phone"),
+  email: text("email"),
   password: text("password"),
   vendorId: uuid("vendor_id"),
   roleId: uuid("role_id").notNull(),
-  refreshToken: text("refreshToken").notNull().default("hi"),
+  refreshToken: text("refreshToken"),
 });
 
 export const usersRelations = relations(user, ({ one }) => ({

@@ -1,4 +1,5 @@
 import {
+  boolean,
   integer,
   pgEnum,
   pgTable,
@@ -22,14 +23,14 @@ export const card = pgTable("card", {
   id: uuid("id").primaryKey().defaultRandom(),
   cardholderName: text("cardholder_name").notNull(),
   cardNumber: text("card_number").notNull(),
-  balance: text("balance").notNull(),
+  balance: integer("balance").notNull(),
   vendorId: uuid("vendor_id").notNull(),
-  currentLimit: text("current_limit").notNull(),
-  maxLimit: text("max_limit").notNull(),
+  currentLimit: integer("current_limit").notNull(),
+  maxLimit: integer("max_limit").notNull(),
   limitInterval: text("limit_interval"),
-  pin: text("pin").notNull(),
-  isActive: text("is_active").notNull(),
-  driverId: uuid("driver_id").notNull(),
+  pin: integer("pin").notNull(),
+  isActive: boolean("is_active").notNull(),
+  driverId: uuid("driver_id"),
 
   createdAt: timestamp("created_at", {
     withTimezone: true,

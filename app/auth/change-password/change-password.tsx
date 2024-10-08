@@ -67,7 +67,7 @@ export default function ChangePassword({ token, user, isReset }: Props) {
       return;
     }
 
-    await login({ email: user.email, password: newPassword }).then((res) => {
+    await login({ email: user.email!, password: newPassword }).then((res) => {
       if (!!res?.message) {
         toast({ title: res?.message, variant: "destructive" });
       } else {

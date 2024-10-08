@@ -1,3 +1,4 @@
+import { CardModalComponent } from "@/components/card-modal";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
@@ -19,6 +20,8 @@ export default async function Home() {
             <p className="text-sm text-muted-foreground">Lorem ipsum</p>
             <Button className="mt-4">Test</Button>
           </div>
+
+          <CardModalComponent />
         </div>
       </CardContent>
     </Card>

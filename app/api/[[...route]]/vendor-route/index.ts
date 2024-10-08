@@ -6,18 +6,22 @@ import { address, vendor, wallet } from "../../database/schema";
 import createContract, { z_contract } from "./create-contract";
 
 export const z_vendorCreateSchema = z.object({
-  name: z.string().min(2, 'Нэр хамгийн багадаа 2 тэмдэгтээс их байна'),
-  register: z.string().min(2,'Байгууллагийн регистр хамгийн багадаа 2 тэмдэгтээс их байна'),
-  phoneNumber: z.string().min(8, 'Утасны дугаар 8 оронтой байх ёстой'),
-  email: z.string().email('Имайл формат буруу байна'),
+  name: z.string().min(2, "Нэр хамгийн багадаа 2 тэмдэгтээс их байна"),
+  register: z
+    .string()
+    .min(2, "Байгууллагийн регистр хамгийн багадаа 2 тэмдэгтээс их байна"),
+  phoneNumber: z.string().min(8, "Утасны дугаар 8 оронтой байх ёстой"),
+  email: z.string().email("Имайл формат буруу байна"),
   address: z.object({
-    bagKhorooId: z.string().min(2,'Байгууллагийн регистр хамгийн багадаа 2 тэмдэгтээс их байна'),
-    details: z.string().min(2, 'Дэлгэрэнгүй хаяг 2 тэмдэгтээс их байна'),
-    coordinate: z.string().min(2, '2 тэмдэгтээс их байна'),
-    phone_number: z.string().min(8, 'Утасны дугаар 8 оронтой байх ёстой'),
+    bagKhorooId: z
+      .string()
+      .min(2, "Байгууллагийн регистр хамгийн багадаа 2 тэмдэгтээс их байна"),
+    details: z.string().min(2, "Дэлгэрэнгүй хаяг 2 тэмдэгтээс их байна"),
+    coordinate: z.string().min(2, "2 тэмдэгтээс их байна"),
+    phone_number: z.string().min(8, "Утасны дугаар 8 оронтой байх ёстой"),
   }),
   contract: z_contract,
-  managerEmail: z.string().email('Имайл формат буруу байна'),
+  managerEmail: z.string().email("Имайл формат буруу байна"),
 });
 
 const vendorRoute = new Hono()
@@ -32,8 +36,6 @@ const vendorRoute = new Hono()
       contract: contractData,
     } = c.req.valid("json");
 
-    console.log("props", name, addressData, contractData);
-
     const createdVendor = await db.transaction(async (tx) => {
       const newAddress = await tx
         .insert(address)
@@ -41,7 +43,7 @@ const vendorRoute = new Hono()
           bagKhorooId: addressData.bagKhorooId,
           details: addressData.details,
           coordinate: addressData.coordinate,
-          phone_number: addressData.phone_number,
+          phoneNumber: addressData.phone_number,
         })
         .returning();
 

@@ -1,0 +1,3 @@
+export const ADMIN_ROLENAME = "ADMIN";
+export const VENDOR_MANAGER_ROLENAME = "VENDOR_MANAGER";
+export const DRIVER_ROLENAME = "DRIVER";

@@ -5,8 +5,7 @@ import { role, convertPgEnum, platformEnum, user } from "../../database/schema";
 import { hashPassword } from "../../tools/crypt";
 import { createPasswordResetToken } from "../auth-route";
 import { Context } from "hono";
-
-const vendorManagerRoleName = "VENDOR_MANAGER";
+import { VENDOR_MANAGER_ROLENAME } from "../../constants";
 
 export default async function inviteManager(
   c: Context,
@@ -15,7 +14,7 @@ export default async function inviteManager(
 ) {
   let vendorManagerRole = await db.query.role
     .findFirst({
-      where: eq(role.name, vendorManagerRoleName),
+      where: eq(role.name, VENDOR_MANAGER_ROLENAME),
     })
     .then((res) => res);
 
@@ -24,7 +23,7 @@ export default async function inviteManager(
     const newRole = await db
       .insert(role)
       .values({
-        name: vendorManagerRoleName,
+        name: VENDOR_MANAGER_ROLENAME,
         platform: convertPgEnum(platformEnum).VENDOR,
         permissions: [],
       })

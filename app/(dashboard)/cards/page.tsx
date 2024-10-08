@@ -1,25 +1,12 @@
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { columns } from "./table-columns";
 import IconButton from "@/components/dashboard/icon-button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import Header from "./header";
+import { columns } from "./table-columns";
 
-import { data } from "./make-data";
 import { DataTable } from "@/components/data-table";
+import { data } from "./make-data";
 
-export default async function Page() {
-  // const listTitle: SubHeader[] = [
-  //   {
-  //     label: "Картууд сонгох",
-  //     status: true,
-  //     href: "",
-  //   },
-  //   {
-  //     label: "Төлбөр төлөлт",
-  //     status: false,
-  //     href: "",
-  //   },
-  // ];
-
+export default function Page() {
   return (
     <div className="bg-white">
       <Header />
