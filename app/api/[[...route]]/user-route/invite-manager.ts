@@ -3,10 +3,16 @@ import { eq } from "drizzle-orm";
 import { db } from "../../database/client";
 import { role, convertPgEnum, platformEnum, user } from "../../database/schema";
 import { hashPassword } from "../../tools/crypt";
+import { createPasswordResetToken } from "../auth-route";
+import { Context } from "hono";
 
 const vendorManagerRoleName = "VENDOR_MANAGER";
 
-export default async function inviteManager(email: string, vendorId: string) {
+export default async function inviteManager(
+  c: Context,
+  email: string,
+  vendorId: string
+) {
   let vendorManagerRole = await db.query.role
     .findFirst({
       where: eq(role.name, vendorManagerRoleName),
@@ -26,21 +32,36 @@ export default async function inviteManager(email: string, vendorId: string) {
     vendorManagerRole = newRole[0];
   }
 
-  const passwordToken = generateBase62Token(8);
-  const passwordHash = await hashPassword(passwordToken);
+  let currentUser = await db.query.user.findFirst({
+    where: eq(user.email, email),
+  });
 
-  // TODO: Send email to new user with passwordToken
+  if (!currentUser) {
+    const newUsers = await db
+      .insert(user)
+      .values({
+        email,
+        name: "New User",
+        vendorId,
+        roleId: vendorManagerRole.id,
+      })
+      .returning();
 
-  const newUsers = await db
-    .insert(user)
-    .values({
-      email,
-      name: "New User",
-      vendorId,
-      firstTimePassword: passwordHash,
-      roleId: vendorManagerRole.id,
-    })
-    .returning();
+    currentUser = newUsers[0];
+  }
 
-  return newUsers[0];
+  const resetToken = await createPasswordResetToken(currentUser.id);
+
+  // TODO: Send email instead of returning the link
+  return c.json(
+    {
+      link:
+        "/auth/change-password?token=" +
+        resetToken +
+        "&userId=" +
+        currentUser.id +
+        '&isReset="false',
+    },
+    200
+  );
 }

@@ -2,9 +2,7 @@ import NextAuth, { CredentialsSignin, NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { api } from "./lib/api";
 import { signInSchema } from "./lib/zod";
-class InvalidLoginError extends CredentialsSignin {
-  code = "User not found.";
-}
+import { Role, Vendor } from "./app/api/database/types";
 
 export const authConfig = {
   providers: [
@@ -41,16 +39,18 @@ export const authConfig = {
         token.id = user.id;
         token.email = user.email;
         token.name = user.name;
+        token.role = user.role;
+        token.vendor = user.vendor;
         token.accessToken = user.accessToken;
-        token.firstTimePassword = user.firstTimePassword;
       }
 
       return token;
     },
-    session: ({ session, user }) => {
-      if (user) {
-        session.user.accessToken = user.accessToken;
-        session.user.firstTimePassword = user.firstTimePassword;
+    session: ({ session, token }) => {
+      if (token) {
+        session.user.accessToken = token.accessToken as string;
+        session.user.role = token.role as Role;
+        session.user.vendor = token.vendor as Vendor;
       }
 
       return session;

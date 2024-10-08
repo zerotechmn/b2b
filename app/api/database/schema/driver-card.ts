@@ -1,4 +1,11 @@
-import { integer, pgEnum, pgTable, text, uuid } from "drizzle-orm/pg-core";
+import {
+  integer,
+  pgEnum,
+  pgTable,
+  text,
+  timestamp,
+  uuid,
+} from "drizzle-orm/pg-core";
 
 export const productEnum = pgEnum("product_enum", [
   "A-80",
@@ -24,8 +31,18 @@ export const card = pgTable("card", {
   isActive: text("is_active").notNull(),
   driverId: uuid("driver_id").notNull(),
 
-  createdAt: text("created_at").notNull(),
-  updatedAt: text("updated_at").notNull(),
+  createdAt: timestamp("created_at", {
+    withTimezone: true,
+    mode: "date",
+  })
+    .notNull()
+    .$defaultFn(() => new Date()),
+  updatedAt: timestamp("updated_at", {
+    withTimezone: true,
+    mode: "date",
+  })
+    .notNull()
+    .$defaultFn(() => new Date()),
 });
 
 export const productBalance = pgTable("product_balance", {
@@ -33,10 +50,21 @@ export const productBalance = pgTable("product_balance", {
   cardId: uuid("card_id").notNull(),
   product: productEnum("product").notNull(),
   balance: text("balance").notNull(),
-  availableStations: uuid("available_stations").array().notNull(),
+  availableStations: uuid("available_stations").array().notNull().default([]),
+  // Same gas station and products can be duplicated across many productBalances.
 
-  createdAt: text("created_at").notNull(),
-  updatedAt: text("updated_at").notNull(),
+  createdAt: timestamp("created_at", {
+    withTimezone: true,
+    mode: "date",
+  })
+    .notNull()
+    .$defaultFn(() => new Date()),
+  updatedAt: timestamp("updated_at", {
+    withTimezone: true,
+    mode: "date",
+  })
+    .notNull()
+    .$defaultFn(() => new Date()),
 });
 
 export const cardRequest = pgTable("card_requests", {
@@ -46,8 +74,18 @@ export const cardRequest = pgTable("card_requests", {
   status: text("status").notNull(),
   requestedAt: text("requested_at").notNull(),
 
-  createdAt: text("created_at").notNull(),
-  updatedAt: text("updated_at").notNull(),
+  createdAt: timestamp("created_at", {
+    withTimezone: true,
+    mode: "date",
+  })
+    .notNull()
+    .$defaultFn(() => new Date()),
+  updatedAt: timestamp("updated_at", {
+    withTimezone: true,
+    mode: "date",
+  })
+    .notNull()
+    .$defaultFn(() => new Date()),
 });
 
 export const statement = pgTable("statement", {
@@ -58,5 +96,17 @@ export const statement = pgTable("statement", {
   to: integer("to").notNull(),
   details: text("details").notNull(),
   stationId: uuid("station_id").notNull(),
-  createdAt: text("created_at").notNull(),
+
+  createdAt: timestamp("created_at", {
+    withTimezone: true,
+    mode: "date",
+  })
+    .notNull()
+    .$defaultFn(() => new Date()),
+  updatedAt: timestamp("updated_at", {
+    withTimezone: true,
+    mode: "date",
+  })
+    .notNull()
+    .$defaultFn(() => new Date()),
 });

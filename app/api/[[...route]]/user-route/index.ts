@@ -6,16 +6,30 @@ import { db } from "../../database/client";
 import { user } from "../../database/schema";
 import { hashPassword } from "../../tools/crypt";
 import inviteManager from "./invite-manager";
+import { decode } from "hono/jwt";
 
 const userRoute = new Hono()
-  .get("/", (c) =>
-    c.json({
-      user: {
-        name: "fritz",
-        password: "",
-      },
-    })
-  )
+  .get("/me", (c) => {
+    const authHeader = c.req.header("Authorization");
+
+    if (!authHeader) {
+      return c.json({ error: "Authorization header is missing" }, 401);
+    }
+
+    const token = authHeader.split(" ")[1];
+
+    if (!token) {
+      return c.json({ error: "Token is missing" }, 401);
+    }
+
+    try {
+      const { payload } = decode(token);
+
+      return c.json({ user: payload }, 200);
+    } catch (error) {
+      return c.json({ error: "Invalid token" }, 401);
+    }
+  })
   .post(
     "/invite",
     zValidator(
@@ -27,8 +41,7 @@ const userRoute = new Hono()
     ),
     async (c) => {
       const { email, vendorId } = c.req.valid("json");
-      const newManager = await inviteManager(email, vendorId);
-      return c.json({ manager: newManager }, 200);
+      return await inviteManager(c, email, vendorId);
     }
   )
   .post(

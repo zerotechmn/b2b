@@ -32,7 +32,7 @@ app.use(
 );
 
 // Define which routes are protected by JWT
-// app.use("/users/*", jwtMiddleware);
+app.use("/users/*", jwtMiddleware);
 
 const route = app
   .route("/authenticate", authRoute)
