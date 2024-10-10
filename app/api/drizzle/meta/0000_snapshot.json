@@ -1,13 +1,5 @@
 {
-<<<<<<< HEAD
-<<<<<<< HEAD
-  "id": "3c076c3f-9808-493b-9348-67d1c7fad053",
-=======
-  "id": "5f9aa7a7-e740-423e-ad85-c66fd8d8093a",
->>>>>>> 2b7bf6037c422ee93a44c90ff5a708e8d84778bf
-=======
-  "id": "c44f6f9c-a36d-41fc-9e17-f22b9bf8cbbd",
->>>>>>> main
+  "id": "99741812-64f7-4d1c-b70e-94e5298099a3",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -126,7 +118,8 @@
         },
         "status": {
           "name": "status",
-          "type": "text",
+          "type": "card_request_status_enum",
+          "typeSchema": "public",
           "primaryKey": false,
           "notNull": true
         },
@@ -774,6 +767,15 @@
     }
   },
   "enums": {
+    "public.card_request_status_enum": {
+      "name": "card_request_status_enum",
+      "schema": "public",
+      "values": [
+        "PENDING",
+        "APPROVED",
+        "REJECTED"
+      ]
+    },
     "public.product_enum": {
       "name": "product_enum",
       "schema": "public",

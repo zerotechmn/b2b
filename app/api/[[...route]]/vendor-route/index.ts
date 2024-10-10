@@ -4,6 +4,7 @@ import { z } from "zod";
 import { db } from "../../database/client";
 import { address, vendor, wallet } from "../../database/schema";
 import createContract, { z_contract } from "./create-contract";
+import { eq } from "drizzle-orm";
 
 export const z_vendorCreateSchema = z.object({
   name: z.string().min(2, "Нэр хамгийн багадаа 2 тэмдэгтээс их байна"),
@@ -26,7 +27,6 @@ export const z_vendorCreateSchema = z.object({
 
 const vendorRoute = new Hono()
   .post("/create", zValidator("json", z_vendorCreateSchema), async (c) => {
-    console.log("vendor create");
     const {
       name,
       register,
@@ -101,6 +101,48 @@ const vendorRoute = new Hono()
         200
       );
     }
-  );
+  )
+  .get("/list", async (c) => {
+    const vendors = await db.query.vendor.findMany({
+      with: {
+        contract: true,
+        address: true,
+        wallet: true,
+        cards: true,
+      },
+    });
+
+    return c.json(
+      {
+        vendors,
+        message: "Success",
+      },
+      200
+    );
+  })
+  .get("/:id", async (c) => {
+    const vendorId = c.req.param("id");
+    const vendorById = await db.query.vendor.findFirst({
+      where: eq(vendor.id, vendorId),
+      with: {
+        contract: true,
+        address: true,
+        wallet: true,
+        cards: true,
+      },
+    });
+
+    if (!vendorById) {
+      return c.json({ message: "Vendor not found", vendor: null }, 404);
+    }
+
+    return c.json(
+      {
+        vendor: vendorById,
+        message: "Success",
+      },
+      200
+    );
+  });
 
 export default vendorRoute;

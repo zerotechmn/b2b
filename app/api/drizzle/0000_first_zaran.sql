@@ -1,4 +1,10 @@
 DO $$ BEGIN
+ CREATE TYPE "public"."card_request_status_enum" AS ENUM('PENDING', 'APPROVED', 'REJECTED');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
  CREATE TYPE "public"."product_enum" AS ENUM('A-80', 'АИ-92', 'Евро Аи-92', 'АИ-95', 'АИ-98', 'Дизель', 'Евро-ДТ', 'Авто хий');
 EXCEPTION
  WHEN duplicate_object THEN null;
@@ -73,29 +79,18 @@ CREATE TABLE IF NOT EXISTS "card" (
 	"current_limit" integer NOT NULL,
 	"max_limit" integer NOT NULL,
 	"limit_interval" text,
-<<<<<<< HEAD:app/api/drizzle/0000_jazzy_living_mummy.sql
-	"pin" text NOT NULL,
-	"is_active" text NOT NULL,
-	"driver_id" uuid NOT NULL,
-<<<<<<<< HEAD:app/api/drizzle/0000_tense_fat_cobra.sql
-	"created_at" text NOT NULL,
-	"updated_at" text NOT NULL
-========
-=======
 	"pin" integer NOT NULL,
 	"is_active" boolean NOT NULL,
 	"driver_id" uuid,
->>>>>>> main:app/api/drizzle/0000_flawless_chat.sql
 	"created_at" timestamp with time zone NOT NULL,
 	"updated_at" timestamp with time zone NOT NULL
->>>>>>>> 2b7bf6037c422ee93a44c90ff5a708e8d84778bf:app/api/drizzle/0000_jazzy_living_mummy.sql
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "card_requests" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"vendor_id" uuid NOT NULL,
 	"requested_amount" integer NOT NULL,
-	"status" text NOT NULL,
+	"status" "card_request_status_enum" NOT NULL,
 	"requested_at" text NOT NULL,
 	"created_at" timestamp with time zone NOT NULL,
 	"updated_at" timestamp with time zone NOT NULL

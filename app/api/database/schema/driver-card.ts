@@ -1,3 +1,4 @@
+import { relations } from "drizzle-orm";
 import {
   boolean,
   integer,
@@ -7,6 +8,8 @@ import {
   timestamp,
   uuid,
 } from "drizzle-orm/pg-core";
+import { vendor } from "./vendor";
+import { user } from "./user";
 
 export const productEnum = pgEnum("product_enum", [
   "A-80",
@@ -46,6 +49,19 @@ export const card = pgTable("card", {
     .$defaultFn(() => new Date()),
 });
 
+export const cardRelations = relations(card, ({ one, many }) => ({
+  vendor: one(vendor, {
+    fields: [card.vendorId],
+    references: [vendor.id],
+  }),
+  driver: one(user, {
+    fields: [card.driverId],
+    references: [user.id],
+  }),
+  productBalances: many(productBalance),
+  cardRequests: many(cardRequest),
+}));
+
 export const productBalance = pgTable("product_balance", {
   id: uuid("id").primaryKey().defaultRandom(),
   cardId: uuid("card_id").notNull(),
@@ -68,11 +84,24 @@ export const productBalance = pgTable("product_balance", {
     .$defaultFn(() => new Date()),
 });
 
+export const productBalanceRelations = relations(productBalance, ({ one }) => ({
+  card: one(card, {
+    fields: [productBalance.cardId],
+    references: [card.id],
+  }),
+}));
+
+export const cardRequestStatusEnum = pgEnum("card_request_status_enum", [
+  "PENDING",
+  "APPROVED",
+  "REJECTED",
+]);
+
 export const cardRequest = pgTable("card_requests", {
   id: uuid("id").primaryKey().defaultRandom(),
   vendorId: uuid("vendor_id").notNull(),
   requestedCardCount: integer("requested_amount").notNull(),
-  status: text("status").notNull(),
+  status: cardRequestStatusEnum("status").notNull(),
   requestedAt: text("requested_at").notNull(),
 
   createdAt: timestamp("created_at", {
@@ -88,6 +117,13 @@ export const cardRequest = pgTable("card_requests", {
     .notNull()
     .$defaultFn(() => new Date()),
 });
+
+export const cardRequestRelations = relations(cardRequest, ({ one }) => ({
+  vendor: one(vendor, {
+    fields: [cardRequest.vendorId],
+    references: [vendor.id],
+  }),
+}));
 
 export const statement = pgTable("statement", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -111,3 +147,10 @@ export const statement = pgTable("statement", {
     .notNull()
     .$defaultFn(() => new Date()),
 });
+
+export const statementRelations = relations(statement, ({ one }) => ({
+  card: one(card, {
+    fields: [statement.cardId],
+    references: [card.id],
+  }),
+}));

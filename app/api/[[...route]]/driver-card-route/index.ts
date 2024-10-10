@@ -26,9 +26,11 @@ const driverCardRoute = new Hono()
     );
   })
   .post("/list", async (c) => {
-    // TODO: do props validation
-
-    const cardList = await db.query.card.findMany();
+    const cardList = await db.query.card.findMany({
+      with: {
+        vendor: true,
+      },
+    });
 
     return c.json(
       {

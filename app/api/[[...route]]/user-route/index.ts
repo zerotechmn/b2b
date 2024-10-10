@@ -84,6 +84,7 @@ const userRoute = new Hono()
         driverRole = newRole[0];
       }
 
+      // TODO: create driver not user
       const newUsers = await db
         .insert(user)
         .values({

@@ -6,7 +6,7 @@ import {
   timestamp,
   uuid,
 } from "drizzle-orm/pg-core";
-import { address } from ".";
+import { address, card } from ".";
 import { relations } from "drizzle-orm";
 
 export const vendor = pgTable("vendor", {
@@ -18,13 +18,14 @@ export const vendor = pgTable("vendor", {
   addressId: uuid("address_id").notNull(),
 });
 
-export const vendorRelations = relations(vendor, ({ one }) => ({
-  contracts: one(contract),
+export const vendorRelations = relations(vendor, ({ one, many }) => ({
+  contract: one(contract),
   address: one(address, {
     fields: [vendor.addressId],
     references: [address.id],
   }),
   wallet: one(wallet),
+  cards: many(card),
 }));
 
 export const wallet = pgTable("wallet", {
