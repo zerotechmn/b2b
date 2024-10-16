@@ -25,8 +25,6 @@ interface Props {
 export async function Dashboard({ children }: Props) {
   const { user } = (await auth()) || {};
 
-  console.log("user", user);
-
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
       <div className="hidden border-r bg-muted/40 md:block md:overflow-hidden flex-none h-screen sticky top-0">

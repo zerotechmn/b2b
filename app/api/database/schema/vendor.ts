@@ -6,7 +6,7 @@ import {
   timestamp,
   uuid,
 } from "drizzle-orm/pg-core";
-import { address, card } from ".";
+import { address, card, cardRequest } from ".";
 import { relations } from "drizzle-orm";
 
 export const vendor = pgTable("vendor", {
@@ -26,11 +26,14 @@ export const vendorRelations = relations(vendor, ({ one, many }) => ({
   }),
   wallet: one(wallet),
   cards: many(card),
+  cardRequests: many(cardRequest),
 }));
 
 export const wallet = pgTable("wallet", {
   id: uuid("id").primaryKey().defaultRandom(),
-  vendorId: uuid("vendor_id").notNull(),
+  vendorId: uuid("vendor_id")
+    .notNull()
+    .references(() => vendor.id),
   balance: integer("balance").notNull(),
 });
 
@@ -85,7 +88,9 @@ export const localEntityEnum = pgEnum("local_entity_enum", [
 
 export const contract = pgTable("contract", {
   id: uuid("id").primaryKey().defaultRandom(),
-  vendorId: uuid("vendor_id").notNull(),
+  vendorId: uuid("vendor_id")
+    .notNull()
+    .references(() => vendor.id),
   contractType: contractTypeEnum("contract_type").notNull(),
   ownership: ownershipTypeEnum("ownership").notNull(),
   salesChannel: salesChannelEnum("sales_channel").notNull(),
@@ -123,7 +128,9 @@ export const paymentTypeEnum = pgEnum("payment_type_enum", [
 
 export const paymentPlan = pgTable("payment_plan", {
   id: uuid("id").primaryKey().defaultRandom(),
-  contractId: uuid("contract_id").notNull(),
+  contractId: uuid("contract_id")
+    .notNull()
+    .references(() => contract.id),
   paymentType: paymentTypeEnum("payment_type").notNull(),
 });
 
@@ -142,7 +149,9 @@ export const paymentDateTypeEnum = pgEnum("payment_date_type_enum", [
 
 export const paymentDateEachMonth = pgTable("payment_date_each_month", {
   id: uuid("id").primaryKey().defaultRandom(),
-  paymentPlanId: uuid("payment_plan_id").notNull(),
+  paymentPlanId: uuid("payment_plan_id")
+    .notNull()
+    .references(() => paymentPlan.id),
   period: timestamp("period").notNull(), // 2024-06-01, 2024-07-01 etc. Represents the whole month.
   monthsAfter: integer("months_after").notNull().default(1), // Payments from 2024-06-01 to 2024-07-01 can be paid several months after. 1 will be calculated as next month.
   paymentDateType: paymentDateTypeEnum("payment_date_type").notNull(),

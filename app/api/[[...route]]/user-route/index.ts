@@ -3,10 +3,8 @@ import { and, eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { decode } from "hono/jwt";
 import { z } from "zod";
-import { DRIVER_ROLENAME } from "../../constants";
 import { db } from "../../database/client";
-import { convertPgEnum, platformEnum, role, user } from "../../database/schema";
-import { hashPassword } from "../../tools/crypt";
+import { driver, user } from "../../database/schema";
 import inviteManager from "./invite-manager";
 
 const userRoute = new Hono()
@@ -57,47 +55,25 @@ const userRoute = new Hono()
     async (c) => {
       const { phoneNumber, vendorId } = c.req.valid("json");
 
-      const dbUser = await db.query.user.findFirst({
-        where: and(eq(user.phone, phoneNumber)),
+      const dbDriver = await db.query.driver.findFirst({
+        where: eq(user.phone, phoneNumber),
       });
 
-      if (dbUser) {
-        return c.json({ error: "User already exists" }, 400);
+      if (dbDriver) {
+        return c.json({ error: "Driver already exists" }, 400);
       }
 
-      let driverRole = await db.query.role
-        .findFirst({
-          where: eq(role.name, DRIVER_ROLENAME),
-        })
-        .then((res) => res);
-
-      // TODO: Delete later because this role should always exist
-      if (!driverRole) {
-        const newRole = await db
-          .insert(role)
-          .values({
-            name: DRIVER_ROLENAME,
-            platform: convertPgEnum(platformEnum).DRIVER,
-            permissions: [],
-          })
-          .returning();
-        driverRole = newRole[0];
-      }
-
-      // TODO: create driver not user
-      const newUsers = await db
-        .insert(user)
+      const newDriver = await db
+        .insert(driver)
         .values({
           phone: phoneNumber,
-          name: "New User",
           vendorId,
-          roleId: driverRole.id,
         })
         .returning();
 
-      // Send SMS
+      // TODO: Send SMS to the phone
 
-      return c.json({ user: newUsers[0] }, 200);
+      return c.json({ driver: newDriver[0] }, 200);
     }
   )
   .post(
@@ -107,32 +83,48 @@ const userRoute = new Hono()
       z.object({
         phoneNumber: z.string(),
         vendorId: z.string(),
+        firstName: z.string(),
+        lastName: z.string(),
+        registerNumber: z.string(),
+        carNumber: z.string(),
       })
     ),
     async (c) => {
-      const { phoneNumber, vendorId } = c.req.valid("json");
-      // return await inviteManager(c, email, vendorId);
-    }
-  )
-  .post(
-    "/confirm-invitation",
-    zValidator(
-      "json",
-      z.object({
-        email: z.string(),
-        password: z.string(),
-      })
-    ),
-    async (c) => {
-      const { email, password } = c.req.valid("json");
+      const {
+        phoneNumber,
+        vendorId,
+        firstName,
+        lastName,
+        registerNumber,
+        carNumber,
+      } = c.req.valid("json");
+      const dbDriver = await db.query.driver.findFirst({
+        where: and(
+          eq(user.phone, phoneNumber),
+          eq(driver.registerNumber, registerNumber)
+        ),
+      });
 
-      const newUsers = await db
-        .update(user)
-        .set({ password: await hashPassword(password) })
-        .where(eq(user.email, email))
-        .returning();
+      if (dbDriver) {
+        return c.json(
+          {
+            error:
+              "Driver already exists with similar phone number or register number.",
+          },
+          400
+        );
+      }
 
-      return c.json({ user: newUsers[0] }, 200);
+      const newDriver = await db.insert(driver).values({
+        phone: phoneNumber,
+        vendorId,
+        firstName,
+        lastName,
+        registerNumber,
+        carNumber,
+      });
+
+      return c.json({ driver: newDriver[0] }, 200);
     }
   )
   .get("/:id", (c) => c.json(`get ${c.req.param("id")}`));

@@ -7,6 +7,7 @@ import { jwtMiddleware } from "../../../lib/jwt";
 import authRoute from "./auth-route";
 import usersRoute from "./user-route";
 import vendorRoute from "./vendor-route";
+import driverCardRoute from "./driver-card-route";
 
 // Can run on the edge if we need to.
 // export const runtime = "edge";
@@ -38,6 +39,7 @@ const route = app
   .route("/authenticate", authRoute)
   .route("/user", usersRoute)
   .route("/vendor", vendorRoute)
+  .route("/driver-card", driverCardRoute)
   .get("/health", (c) => {
     return c.json({
       message: "Hello!",

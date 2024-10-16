@@ -16,6 +16,7 @@ import {
   paymentTypeEnum,
 } from "./../../database/schema";
 
+// TODO: finish dates
 export const z_contract = z.object({
   // startDate: z.coerce.date(),
   // expiresAt: z.coerce.date(),

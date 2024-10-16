@@ -10,6 +10,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { vendor } from "./vendor";
 import { user } from "./user";
+import { driver } from "./driver";
 
 export const productEnum = pgEnum("product_enum", [
   "A-80",
@@ -26,14 +27,16 @@ export const card = pgTable("card", {
   id: uuid("id").primaryKey().defaultRandom(),
   cardholderName: text("cardholder_name").notNull(),
   cardNumber: text("card_number").notNull(),
-  balance: integer("balance").notNull(),
-  vendorId: uuid("vendor_id").notNull(),
+  balance: integer("balance").notNull().default(0),
+  vendorId: uuid("vendor_id")
+    .notNull()
+    .references(() => vendor.id),
   currentLimit: integer("current_limit").notNull(),
   maxLimit: integer("max_limit").notNull(),
   limitInterval: text("limit_interval"),
   pin: integer("pin").notNull(),
   isActive: boolean("is_active").notNull(),
-  driverId: uuid("driver_id"),
+  driverId: uuid("driver_id").references(() => driver.id),
 
   createdAt: timestamp("created_at", {
     withTimezone: true,
@@ -54,9 +57,9 @@ export const cardRelations = relations(card, ({ one, many }) => ({
     fields: [card.vendorId],
     references: [vendor.id],
   }),
-  driver: one(user, {
+  driver: one(driver, {
     fields: [card.driverId],
-    references: [user.id],
+    references: [driver.id],
   }),
   productBalances: many(productBalance),
   cardRequests: many(cardRequest),
@@ -64,10 +67,12 @@ export const cardRelations = relations(card, ({ one, many }) => ({
 
 export const productBalance = pgTable("product_balance", {
   id: uuid("id").primaryKey().defaultRandom(),
-  cardId: uuid("card_id").notNull(),
+  cardId: uuid("card_id")
+    .notNull()
+    .references(() => card.id),
   product: productEnum("product").notNull(),
-  balance: text("balance").notNull(),
-  availableStations: uuid("available_stations").array().notNull().default([]),
+  balance: integer("balance").notNull().default(0),
+  availableStations: uuid("available_stations").array().notNull(),
   // Same gas station and products can be duplicated across many productBalances.
 
   createdAt: timestamp("created_at", {
@@ -97,9 +102,11 @@ export const cardRequestStatusEnum = pgEnum("card_request_status_enum", [
   "REJECTED",
 ]);
 
-export const cardRequest = pgTable("card_requests", {
+export const cardRequest = pgTable("card_request", {
   id: uuid("id").primaryKey().defaultRandom(),
-  vendorId: uuid("vendor_id").notNull(),
+  vendorId: uuid("vendor_id")
+    .notNull()
+    .references(() => vendor.id),
   requestedCardCount: integer("requested_amount").notNull(),
   status: cardRequestStatusEnum("status").notNull(),
   requestedAt: text("requested_at").notNull(),
@@ -127,7 +134,9 @@ export const cardRequestRelations = relations(cardRequest, ({ one }) => ({
 
 export const statement = pgTable("statement", {
   id: uuid("id").primaryKey().defaultRandom(),
-  cardId: uuid("card_id").notNull(),
+  cardId: uuid("card_id")
+    .notNull()
+    .references(() => card.id),
   amount: text("amount").notNull(),
   from: integer("from").notNull(),
   to: integer("to").notNull(),

@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS "card" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"cardholder_name" text NOT NULL,
 	"card_number" text NOT NULL,
-	"balance" integer NOT NULL,
+	"balance" integer DEFAULT 0 NOT NULL,
 	"vendor_id" uuid NOT NULL,
 	"current_limit" integer NOT NULL,
 	"max_limit" integer NOT NULL,
@@ -100,8 +100,8 @@ CREATE TABLE IF NOT EXISTS "product_balance" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"card_id" uuid NOT NULL,
 	"product" "product_enum" NOT NULL,
-	"balance" text NOT NULL,
-	"available_stations" uuid[] DEFAULT  NOT NULL,
+	"balance" integer DEFAULT 0 NOT NULL,
+	"available_stations" uuid[] NOT NULL,
 	"created_at" timestamp with time zone NOT NULL,
 	"updated_at" timestamp with time zone NOT NULL
 );
