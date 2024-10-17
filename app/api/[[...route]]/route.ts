@@ -33,7 +33,9 @@ app.use(
 );
 
 // Define which routes are protected by JWT
-// app.use("/users/*", jwtMiddleware);
+app.use("/user/*", jwtMiddleware);
+app.use("/vendor/*", jwtMiddleware);
+app.use("/driver-card/*", jwtMiddleware);
 
 const route = app
   .route("/authenticate", authRoute)

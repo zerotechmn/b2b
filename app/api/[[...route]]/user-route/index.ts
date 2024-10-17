@@ -1,33 +1,17 @@
 import { zValidator } from "@hono/zod-validator";
 import { and, eq } from "drizzle-orm";
 import { Hono } from "hono";
-import { decode } from "hono/jwt";
 import { z } from "zod";
 import { db } from "../../database/client";
 import { driver, user } from "../../database/schema";
+import { JWTPayloadExtended } from "../auth-route/auth-user";
 import inviteManager from "./invite-manager";
 
 const userRoute = new Hono()
   .get("/me", (c) => {
-    const authHeader = c.req.header("Authorization");
-
-    if (!authHeader) {
-      return c.json({ error: "Authorization header is missing" }, 401);
-    }
-
-    const token = authHeader.split(" ")[1];
-
-    if (!token) {
-      return c.json({ error: "Token is missing" }, 401);
-    }
-
-    try {
-      const { payload } = decode(token);
-
-      return c.json({ user: payload }, 200);
-    } catch (error) {
-      return c.json({ error: "Invalid token" }, 401);
-    }
+    const payload = c.get("jwtPayload") as JWTPayloadExtended;
+    console.log("payload", payload);
+    return c.json({ user: payload }, 200);
   })
   .post(
     "/invite",

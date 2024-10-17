@@ -10,6 +10,7 @@ import { user } from "../../database/schema";
 import { comparePassword, hashPassword } from "../../tools/crypt";
 import { passwordResetToken } from "../../database/schema";
 import login from "./login";
+import { getAuthUser } from "./auth-user";
 
 const authRoute = new Hono()
   .post(
@@ -64,11 +65,7 @@ const authRoute = new Hono()
       const { email, refreshToken } = c.req.valid("json");
       if (!refreshToken) return c.json({ message: "Unauthenticated" }, 401);
 
-      const currentUser = await db.query.user
-        .findFirst({
-          where: eq(user.email, email),
-        })
-        .catch(() => null);
+      const currentUser = await getAuthUser(email);
 
       if (
         !(await comparePassword(refreshToken, currentUser?.refreshToken || ""))

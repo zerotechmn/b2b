@@ -28,11 +28,10 @@ export const card = pgTable("card", {
   cardholderName: text("cardholder_name").notNull(),
   cardNumber: text("card_number").notNull(),
   balance: integer("balance").notNull().default(0),
-  vendorId: uuid("vendor_id")
-    .notNull()
-    .references(() => vendor.id),
+  vendorId: uuid("vendor_id").references(() => vendor.id),
   currentLimit: integer("current_limit").notNull(),
   maxLimit: integer("max_limit").notNull(),
+  // 1 or 2 or 3? forgot the meaning of these numbers
   limitInterval: text("limit_interval"),
   pin: integer("pin").notNull(),
   isActive: boolean("is_active").notNull(),
@@ -73,7 +72,7 @@ export const productBalance = pgTable("product_balance", {
   product: productEnum("product").notNull(),
   balance: integer("balance").notNull().default(0),
   availableStations: uuid("available_stations").array().notNull(),
-  // Same gas station and products can be duplicated across many productBalances.
+  // Warning: Same gas station and products can be duplicated across many productBalances.
 
   createdAt: timestamp("created_at", {
     withTimezone: true,
@@ -163,3 +162,34 @@ export const statementRelations = relations(statement, ({ one }) => ({
     references: [card.id],
   }),
 }));
+
+export const transferActionEnum = pgEnum("transfer_action_enum", [
+  "CARD_REQUEST_FULFILLMENT",
+  "CARD_TRANSFER",
+  "CARD_TRANSFER_RETURN",
+  "DRIVER_ASSIGN",
+  "DRIVER_UNASSIGN",
+]);
+
+export const cardTransferLog = pgTable("card_transfer_log", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  cardId: uuid("card_id")
+    .notNull()
+    .references(() => card.id),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => user.id),
+  action: transferActionEnum("transfer_action").notNull(),
+  fromVendorId: uuid("from_vendor_id").references(() => vendor.id),
+  toVendorId: uuid("to_vendor_id").references(() => vendor.id),
+  fromDriverId: uuid("from_driver_id").references(() => driver.id),
+  toDriverId: uuid("to_driver_id").references(() => driver.id),
+  details: text("details").notNull().default(""),
+
+  createdAt: timestamp("created_at", {
+    withTimezone: true,
+    mode: "date",
+  })
+    .notNull()
+    .$defaultFn(() => new Date()),
+});
