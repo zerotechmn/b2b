@@ -1,7 +1,6 @@
+import { relations } from "drizzle-orm";
 import { pgTable, text, uuid } from "drizzle-orm/pg-core";
 import { vendor } from "./vendor";
-import { role } from "./user";
-import { relations } from "drizzle-orm";
 
 export const driver = pgTable("driver", {
   id: uuid("id").primaryKey().defaultRandom(),
