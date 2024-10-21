@@ -1,5 +1,5 @@
 {
-  "id": "99741812-64f7-4d1c-b70e-94e5298099a3",
+  "id": "8c3a0b77-aa9d-4435-94f5-9a17744be778",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -31,7 +31,8 @@
           "name": "balance",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "default": 0
         },
         "vendor_id": {
           "name": "vendor_id",
@@ -173,16 +174,16 @@
         },
         "balance": {
           "name": "balance",
-          "type": "text",
+          "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "default": 0
         },
         "available_stations": {
           "name": "available_stations",
           "type": "uuid[]",
           "primaryKey": false,
-          "notNull": true,
-          "default": []
+          "notNull": true
         },
         "created_at": {
           "name": "created_at",

@@ -14,7 +14,7 @@ async function main() {
     await migrationClient.end();
     console.log("Database migrated successfully!");
   } catch (e: any) {
-    throw new Error(e);
+    console.log("Migration error: ", e);
   }
 }
 

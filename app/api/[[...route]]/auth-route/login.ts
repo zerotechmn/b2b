@@ -2,26 +2,17 @@ import { eq } from "drizzle-orm";
 import { Context } from "hono";
 import { generateAccessToken, generateRefreshToken } from "../../../../lib/jwt";
 import { db } from "../../database/client";
-import { user, vendor } from "../../database/schema";
+import { user } from "../../database/schema";
 import { comparePassword, hashPassword } from "../../tools/crypt";
 import { role } from "./../../database/schema";
+import { getAuthUser } from "./auth-user";
 
 export default async function login(
   c: Context,
   email: string,
   password: string
 ) {
-  const currentUser = await db.query.user.findFirst({
-    where: eq(user.email, email),
-    columns: {
-      id: true,
-      name: true,
-      email: true,
-      password: true,
-      roleId: true,
-      vendorId: true,
-    },
-  });
+  const currentUser = await getAuthUser(email);
 
   if (
     !currentUser ||
@@ -39,10 +30,6 @@ export default async function login(
     where: eq(role.id, currentUser.roleId),
   });
 
-  const userVendor = await db.query.vendor.findFirst({
-    where: eq(vendor.id, currentUser.vendorId || ""),
-  });
-
   const refreshToken = await generateRefreshToken(currentUser);
   const hashedRefreshToken = await hashPassword(refreshToken);
 
@@ -58,7 +45,6 @@ export default async function login(
       user: {
         ...returnUser,
         role: userRole,
-        vendor: userVendor,
       },
       accessToken: await generateAccessToken(currentUser),
       refreshToken,

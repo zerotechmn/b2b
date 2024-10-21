@@ -1,6 +1,7 @@
 import { Context, Next } from "hono";
 import { jwt, sign } from "hono/jwt";
 import { ContextType } from "../app/api/[[...route]]/route";
+import { AuthUser } from "@/app/api/[[...route]]/auth-route/login";
 
 export function jwtMiddleware(c: Context<ContextType>, next: Next) {
   const mw = jwt({
@@ -9,7 +10,7 @@ export function jwtMiddleware(c: Context<ContextType>, next: Next) {
   return mw(c, next);
 }
 
-export async function generateAccessToken(user: any) {
+export async function generateAccessToken(user: AuthUser) {
   return await sign(
     {
       ...user,
@@ -19,7 +20,7 @@ export async function generateAccessToken(user: any) {
   );
 }
 
-export async function generateRefreshToken(user: any) {
+export async function generateRefreshToken(user: AuthUser) {
   return await sign(user, process.env.JWT_REFRESH_SECRET!);
 }
 

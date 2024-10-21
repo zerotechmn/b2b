@@ -6,6 +6,7 @@ import { relations } from "drizzle-orm";
 export * from "./user";
 export * from "./vendor";
 export * from "./driver-card";
+export * from "./driver";
 
 export function convertPgEnum<T extends [string, ...string[]]>(
   pgEnum: PgEnum<T>

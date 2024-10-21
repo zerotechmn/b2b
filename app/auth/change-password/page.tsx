@@ -12,6 +12,10 @@ export default async function ChangePasswordPage({
     isReset?: string;
   };
 }) {
+  const res = await api["driver-card"].list.$get({
+    json: {},
+  });
+
   const response = await api.authenticate["verify-reset-token"].$post({
     json: {
       token: searchParams.token || "",

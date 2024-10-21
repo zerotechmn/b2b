@@ -7,6 +7,7 @@ import { jwtMiddleware } from "../../../lib/jwt";
 import authRoute from "./auth-route";
 import usersRoute from "./user-route";
 import vendorRoute from "./vendor-route";
+import driverCardRoute from "./driver-card-route";
 
 // Can run on the edge if we need to.
 // export const runtime = "edge";
@@ -32,12 +33,15 @@ app.use(
 );
 
 // Define which routes are protected by JWT
-app.use("/users/*", jwtMiddleware);
+app.use("/user/*", jwtMiddleware);
+app.use("/vendor/*", jwtMiddleware);
+app.use("/driver-card/*", jwtMiddleware);
 
 const route = app
   .route("/authenticate", authRoute)
   .route("/user", usersRoute)
   .route("/vendor", vendorRoute)
+  .route("/driver-card", driverCardRoute)
   .get("/health", (c) => {
     return c.json({
       message: "Hello!",
