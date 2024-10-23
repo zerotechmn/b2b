@@ -15,6 +15,7 @@ export const vendor = pgTable("vendor", {
   register: text("register").notNull(),
   phoneNumber: text("phone_number").notNull(),
   email: text("email").notNull(),
+  balance: integer("balance").notNull().default(0),
   addressId: uuid("address_id").notNull(),
 });
 
@@ -24,24 +25,9 @@ export const vendorRelations = relations(vendor, ({ one, many }) => ({
     fields: [vendor.addressId],
     references: [address.id],
   }),
-  wallet: one(wallet),
+
   cards: many(card),
   cardRequests: many(cardRequest),
-}));
-
-export const wallet = pgTable("wallet", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  vendorId: uuid("vendor_id")
-    .notNull()
-    .references(() => vendor.id),
-  balance: integer("balance").notNull(),
-});
-
-export const walletRelations = relations(wallet, ({ one }) => ({
-  vendor: one(vendor, {
-    fields: [wallet.vendorId],
-    references: [vendor.id],
-  }),
 }));
 
 export const contractTypeEnum = pgEnum("contract_type_enum", [
