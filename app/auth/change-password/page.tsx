@@ -1,7 +1,7 @@
-import { api } from "@/lib/api";
-import ChangePassword from "./change-password";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { api } from "@/lib/api";
+import Link from "next/link";
+import ChangePassword from "./change-password";
 
 export default async function ChangePasswordPage({
   searchParams,

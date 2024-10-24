@@ -1,8 +1,8 @@
-import NextAuth, { CredentialsSignin, NextAuthConfig } from "next-auth";
+import NextAuth, { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import { api } from "./lib/api";
-import { signInSchema } from "./lib/zod";
 import { Role, Vendor } from "./app/api/database/types";
+import { signInSchema } from "./lib/zod";
+import { api } from "./lib/api";
 
 export const authConfig = {
   providers: [

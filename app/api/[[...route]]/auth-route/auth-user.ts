@@ -1,4 +1,4 @@
-import { eq, InferModel } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { db } from "../../database/client";
 import { user } from "../../database/schema";
 
@@ -20,5 +20,3 @@ export interface JWTPayloadExtended extends AuthUser {
   iat?: number;
   exp?: number;
 }
-
-export type TestUser = InferModel<typeof user>;

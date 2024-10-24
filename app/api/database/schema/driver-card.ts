@@ -1,6 +1,7 @@
 import { relations } from "drizzle-orm";
 import {
   boolean,
+  decimal,
   integer,
   pgEnum,
   pgTable,
@@ -106,9 +107,12 @@ export const cardRequest = pgTable("card_request", {
   vendorId: uuid("vendor_id")
     .notNull()
     .references(() => vendor.id),
+  requestedUserId: uuid("requested_user_id")
+    .references(() => user.id)
+    .notNull(),
+
   requestedCardCount: integer("requested_amount").notNull(),
   status: cardRequestStatusEnum("status").notNull(),
-  requestedAt: text("requested_at").notNull(),
   fulfilledCardIds: uuid("fulfilled_card_ids")
     .references(() => card.id)
     .array()

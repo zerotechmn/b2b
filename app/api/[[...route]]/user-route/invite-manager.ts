@@ -1,11 +1,9 @@
-import { generateBase62Token } from "@/lib/jwt";
 import { eq } from "drizzle-orm";
-import { db } from "../../database/client";
-import { role, convertPgEnum, platformEnum, user } from "../../database/schema";
-import { hashPassword } from "../../tools/crypt";
-import { createPasswordResetToken } from "../auth-route";
 import { Context } from "hono";
 import { VENDOR_MANAGER_ROLENAME } from "../../constants";
+import { db } from "../../database/client";
+import { convertPgEnum, platformEnum, role, user } from "../../database/schema";
+import { createPasswordResetToken } from "../auth-route";
 
 export default async function inviteManager(
   c: Context,

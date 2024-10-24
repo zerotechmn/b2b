@@ -3,8 +3,15 @@ import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
 import { db } from "../../database/client";
-import { address, contract, vendor } from "../../database/schema";
+import {
+  address,
+  contract,
+  paymentDateEachMonth,
+  paymentPlan,
+  vendor,
+} from "../../database/schema";
 import createContract, { z_contract } from "./create-contract";
+import { rest } from "lodash";
 
 export const z_vendorCreateSchema = z.object({
   name: z.string().min(2, "Нэр хамгийн багадаа 2 тэмдэгтээс их байна"),
@@ -82,7 +89,37 @@ const vendorRoute = new Hono()
         })
         .returning();
 
-      await createContract({ vendorId: newVendor[0].id, ...contractData });
+      const newContract = await tx
+        .insert(contract)
+        .values({
+          vendorId: newVendor[0].id,
+          startDate: new Date(),
+          expiresAt: new Date(),
+          ...contractData,
+        })
+        .returning();
+
+      const newPaymentPlan = await tx
+        .insert(paymentPlan)
+        .values({
+          contractId: newContract[0].id,
+          paymentType: contractData.paymentType,
+        })
+        .returning();
+
+      await tx
+        .insert(paymentDateEachMonth)
+        .values({
+          paymentPlanId: newPaymentPlan[0].id,
+          period: new Date(),
+          monthsAfter: contractData.monthsAfter,
+          paymentDateType: contractData.paymentDateType!,
+          sameDayEachMonth: contractData.sameDayEachMonth,
+          weekOfMonth: contractData.weekOfMonth,
+          dayOfWeek: contractData.dayOfWeek,
+          daysAfter: contractData.daysAfter,
+        })
+        .returning();
 
       return newVendor[0];
     });

@@ -20,12 +20,15 @@ import { useToast } from "@/components/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { submitForm } from "./validation";
 import { api } from "@/lib/api";
+import { auth } from "@/auth";
+import { useSession } from "next-auth/react";
 
 export type VendorCreateFormSchema = z.infer<typeof z_vendorCreateSchema>;
 
 export default function Page() {
   const { toast } = useToast();
   const router = useRouter();
+  const { data: session } = useSession();
 
   const form = useForm<z.infer<typeof z_vendorCreateSchema>>({
     defaultValues: {},
@@ -37,24 +40,31 @@ export default function Page() {
   } = form;
 
   const onSubmit = async (data: z.infer<typeof z_vendorCreateSchema>) => {
-    const { data: success, errors } = await submitForm(data);
+    console.log("on sub");
+    // const { data: success, errors } = await submitForm(data);
 
     if (errors) {
       toast({ title: "Алдаа гарлаа", variant: "destructive" });
     }
 
-    if (success) {
+    if (true) {
       try {
-        const response = await api.vendor.create
-          .$post({
+        const response = await api.vendor.create.$post(
+          {
             json: data,
-          })
-          .then((res) => {
-            if (res.status == 200) {
-              toast({ title: "Амжилттай бүртгүүллээ", variant: "default" });
-              router.replace("/vendor");
-            }
-          });
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${session?.user?.accessToken}`,
+            },
+          }
+        );
+
+        console.log("res", response);
+        if (response.status == 200) {
+          toast({ title: "Амжилттай бүртгүүллээ", variant: "default" });
+          router.replace("/vendor");
+        }
       } catch (e) {
         toast({ title: "Алдаа гарлаа", variant: "destructive" });
       }

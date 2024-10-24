@@ -1,5 +1,5 @@
 {
-  "id": "8c3a0b77-aa9d-4435-94f5-9a17744be778",
+  "id": "8c2e96d0-1085-45ba-bc63-a57b2093a5ab",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -38,7 +38,7 @@
           "name": "vendor_id",
           "type": "uuid",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "current_limit": {
           "name": "current_limit",
@@ -90,12 +90,39 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "card_vendor_id_vendor_id_fk": {
+          "name": "card_vendor_id_vendor_id_fk",
+          "tableFrom": "card",
+          "tableTo": "vendor",
+          "columnsFrom": [
+            "vendor_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "card_driver_id_driver_id_fk": {
+          "name": "card_driver_id_driver_id_fk",
+          "tableFrom": "card",
+          "tableTo": "driver",
+          "columnsFrom": [
+            "driver_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "public.card_requests": {
-      "name": "card_requests",
+    "public.card_request": {
+      "name": "card_request",
       "schema": "",
       "columns": {
         "id": {
@@ -107,6 +134,12 @@
         },
         "vendor_id": {
           "name": "vendor_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "requested_user_id": {
+          "name": "requested_user_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
@@ -124,9 +157,9 @@
           "primaryKey": false,
           "notNull": true
         },
-        "requested_at": {
-          "name": "requested_at",
-          "type": "text",
+        "fulfilled_card_ids": {
+          "name": "fulfilled_card_ids",
+          "type": "uuid[]",
           "primaryKey": false,
           "notNull": true
         },
@@ -144,7 +177,186 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "card_request_vendor_id_vendor_id_fk": {
+          "name": "card_request_vendor_id_vendor_id_fk",
+          "tableFrom": "card_request",
+          "tableTo": "vendor",
+          "columnsFrom": [
+            "vendor_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "card_request_requested_user_id_user_id_fk": {
+          "name": "card_request_requested_user_id_user_id_fk",
+          "tableFrom": "card_request",
+          "tableTo": "user",
+          "columnsFrom": [
+            "requested_user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.card_transfer_log": {
+      "name": "card_transfer_log",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "card_id": {
+          "name": "card_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "transfer_action": {
+          "name": "transfer_action",
+          "type": "transfer_action_enum",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "from_vendor_id": {
+          "name": "from_vendor_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "to_vendor_id": {
+          "name": "to_vendor_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "from_driver_id": {
+          "name": "from_driver_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "to_driver_id": {
+          "name": "to_driver_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "details": {
+          "name": "details",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "card_transfer_log_card_id_card_id_fk": {
+          "name": "card_transfer_log_card_id_card_id_fk",
+          "tableFrom": "card_transfer_log",
+          "tableTo": "card",
+          "columnsFrom": [
+            "card_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "card_transfer_log_user_id_user_id_fk": {
+          "name": "card_transfer_log_user_id_user_id_fk",
+          "tableFrom": "card_transfer_log",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "card_transfer_log_from_vendor_id_vendor_id_fk": {
+          "name": "card_transfer_log_from_vendor_id_vendor_id_fk",
+          "tableFrom": "card_transfer_log",
+          "tableTo": "vendor",
+          "columnsFrom": [
+            "from_vendor_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "card_transfer_log_to_vendor_id_vendor_id_fk": {
+          "name": "card_transfer_log_to_vendor_id_vendor_id_fk",
+          "tableFrom": "card_transfer_log",
+          "tableTo": "vendor",
+          "columnsFrom": [
+            "to_vendor_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "card_transfer_log_from_driver_id_driver_id_fk": {
+          "name": "card_transfer_log_from_driver_id_driver_id_fk",
+          "tableFrom": "card_transfer_log",
+          "tableTo": "driver",
+          "columnsFrom": [
+            "from_driver_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "card_transfer_log_to_driver_id_driver_id_fk": {
+          "name": "card_transfer_log_to_driver_id_driver_id_fk",
+          "tableFrom": "card_transfer_log",
+          "tableTo": "driver",
+          "columnsFrom": [
+            "to_driver_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
@@ -199,7 +411,21 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "product_balance_card_id_card_id_fk": {
+          "name": "product_balance_card_id_card_id_fk",
+          "tableFrom": "product_balance",
+          "tableTo": "card",
+          "columnsFrom": [
+            "card_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
@@ -222,19 +448,19 @@
         },
         "amount": {
           "name": "amount",
-          "type": "text",
+          "type": "numeric(10, 2)",
           "primaryKey": false,
           "notNull": true
         },
         "from": {
           "name": "from",
-          "type": "integer",
+          "type": "numeric(10, 2)",
           "primaryKey": false,
           "notNull": true
         },
         "to": {
           "name": "to",
-          "type": "integer",
+          "type": "numeric(10, 2)",
           "primaryKey": false,
           "notNull": true
         },
@@ -242,13 +468,33 @@
           "name": "details",
           "type": "text",
           "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "type": {
+          "name": "type",
+          "type": "statement_type_enum",
+          "typeSchema": "public",
+          "primaryKey": false,
           "notNull": true
         },
         "station_id": {
           "name": "station_id",
           "type": "uuid",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
+        },
+        "vendor_id": {
+          "name": "vendor_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
         },
         "created_at": {
           "name": "created_at",
@@ -264,7 +510,120 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "statement_card_id_card_id_fk": {
+          "name": "statement_card_id_card_id_fk",
+          "tableFrom": "statement",
+          "tableTo": "card",
+          "columnsFrom": [
+            "card_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "statement_vendor_id_vendor_id_fk": {
+          "name": "statement_vendor_id_vendor_id_fk",
+          "tableFrom": "statement",
+          "tableTo": "vendor",
+          "columnsFrom": [
+            "vendor_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "statement_user_id_user_id_fk": {
+          "name": "statement_user_id_user_id_fk",
+          "tableFrom": "statement",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.driver": {
+      "name": "driver",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "first_name": {
+          "name": "first_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_name": {
+          "name": "last_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "phone": {
+          "name": "phone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "vendor_id": {
+          "name": "vendor_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "register_number": {
+          "name": "register_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "car_number": {
+          "name": "car_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "refreshToken": {
+          "name": "refreshToken",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "driver_vendor_id_vendor_id_fk": {
+          "name": "driver_vendor_id_vendor_id_fk",
+          "tableFrom": "driver",
+          "tableTo": "vendor",
+          "columnsFrom": [
+            "vendor_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
@@ -463,7 +822,7 @@
           "name": "email",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "password": {
           "name": "password",
@@ -491,7 +850,34 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "user_vendor_id_vendor_id_fk": {
+          "name": "user_vendor_id_vendor_id_fk",
+          "tableFrom": "user",
+          "tableTo": "vendor",
+          "columnsFrom": [
+            "vendor_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "user_role_id_role_id_fk": {
+          "name": "user_role_id_role_id_fk",
+          "tableFrom": "user",
+          "tableTo": "role",
+          "columnsFrom": [
+            "role_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
@@ -589,7 +975,21 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "contract_vendor_id_vendor_id_fk": {
+          "name": "contract_vendor_id_vendor_id_fk",
+          "tableFrom": "contract",
+          "tableTo": "vendor",
+          "columnsFrom": [
+            "vendor_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
@@ -656,7 +1056,21 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "payment_date_each_month_payment_plan_id_payment_plan_id_fk": {
+          "name": "payment_date_each_month_payment_plan_id_payment_plan_id_fk",
+          "tableFrom": "payment_date_each_month",
+          "tableTo": "payment_plan",
+          "columnsFrom": [
+            "payment_plan_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
@@ -686,7 +1100,21 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "payment_plan_contract_id_contract_id_fk": {
+          "name": "payment_plan_contract_id_contract_id_fk",
+          "tableFrom": "payment_plan",
+          "tableTo": "contract",
+          "columnsFrom": [
+            "contract_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
@@ -725,38 +1153,16 @@
           "primaryKey": false,
           "notNull": true
         },
-        "address_id": {
-          "name": "address_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    },
-    "public.wallet": {
-      "name": "wallet",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "vendor_id": {
-          "name": "vendor_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
         "balance": {
           "name": "balance",
           "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "address_id": {
+          "name": "address_id",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         }
@@ -791,6 +1197,27 @@
         "Авто хий"
       ]
     },
+    "public.statement_type_enum": {
+      "name": "statement_type_enum",
+      "schema": "public",
+      "values": [
+        "CHARGE",
+        "WITHDRAW",
+        "PURCHASE",
+        "BONUS"
+      ]
+    },
+    "public.transfer_action_enum": {
+      "name": "transfer_action_enum",
+      "schema": "public",
+      "values": [
+        "CARD_REQUEST_FULFILLMENT",
+        "CARD_TRANSFER",
+        "CARD_TRANSFER_RETURN",
+        "DRIVER_ASSIGN",
+        "DRIVER_UNASSIGN"
+      ]
+    },
     "public.permission_enum": {
       "name": "permission_enum",
       "schema": "public",
@@ -806,8 +1233,7 @@
       "schema": "public",
       "values": [
         "ADMIN",
-        "VENDOR",
-        "DRIVER"
+        "VENDOR"
       ]
     },
     "public.contract_type_enum": {

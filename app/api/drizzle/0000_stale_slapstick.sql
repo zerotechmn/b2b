@@ -11,13 +11,25 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
+ CREATE TYPE "public"."statement_type_enum" AS ENUM('CHARGE', 'WITHDRAW', 'PURCHASE', 'BONUS');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ CREATE TYPE "public"."transfer_action_enum" AS ENUM('CARD_REQUEST_FULFILLMENT', 'CARD_TRANSFER', 'CARD_TRANSFER_RETURN', 'DRIVER_ASSIGN', 'DRIVER_UNASSIGN');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
  CREATE TYPE "public"."permission_enum" AS ENUM('CREATE_CARD', 'READ_CARD', 'UPDATE_CARD', 'DELETE_CARD');
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- CREATE TYPE "public"."platform_enum" AS ENUM('ADMIN', 'VENDOR', 'DRIVER');
+ CREATE TYPE "public"."platform_enum" AS ENUM('ADMIN', 'VENDOR');
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -75,7 +87,7 @@ CREATE TABLE IF NOT EXISTS "card" (
 	"cardholder_name" text NOT NULL,
 	"card_number" text NOT NULL,
 	"balance" integer DEFAULT 0 NOT NULL,
-	"vendor_id" uuid NOT NULL,
+	"vendor_id" uuid,
 	"current_limit" integer NOT NULL,
 	"max_limit" integer NOT NULL,
 	"limit_interval" text,
@@ -86,14 +98,28 @@ CREATE TABLE IF NOT EXISTS "card" (
 	"updated_at" timestamp with time zone NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "card_requests" (
+CREATE TABLE IF NOT EXISTS "card_request" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"vendor_id" uuid NOT NULL,
+	"requested_user_id" uuid NOT NULL,
 	"requested_amount" integer NOT NULL,
 	"status" "card_request_status_enum" NOT NULL,
-	"requested_at" text NOT NULL,
+	"fulfilled_card_ids" uuid[] NOT NULL,
 	"created_at" timestamp with time zone NOT NULL,
 	"updated_at" timestamp with time zone NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "card_transfer_log" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"card_id" uuid NOT NULL,
+	"user_id" uuid NOT NULL,
+	"transfer_action" "transfer_action_enum" NOT NULL,
+	"from_vendor_id" uuid,
+	"to_vendor_id" uuid,
+	"from_driver_id" uuid,
+	"to_driver_id" uuid,
+	"details" text DEFAULT '' NOT NULL,
+	"created_at" timestamp with time zone NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "product_balance" (
@@ -109,13 +135,27 @@ CREATE TABLE IF NOT EXISTS "product_balance" (
 CREATE TABLE IF NOT EXISTS "statement" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"card_id" uuid NOT NULL,
-	"amount" text NOT NULL,
-	"from" integer NOT NULL,
-	"to" integer NOT NULL,
-	"details" text NOT NULL,
-	"station_id" uuid NOT NULL,
+	"amount" numeric(10, 2) NOT NULL,
+	"from" numeric(10, 2) NOT NULL,
+	"to" numeric(10, 2) NOT NULL,
+	"details" text DEFAULT '' NOT NULL,
+	"type" "statement_type_enum" NOT NULL,
+	"station_id" uuid,
+	"vendor_id" uuid,
+	"user_id" uuid,
 	"created_at" timestamp with time zone NOT NULL,
 	"updated_at" timestamp with time zone NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "driver" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"first_name" text,
+	"last_name" text,
+	"phone" text NOT NULL,
+	"vendor_id" uuid,
+	"register_number" text,
+	"car_number" text,
+	"refreshToken" text
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "address" (
@@ -150,7 +190,7 @@ CREATE TABLE IF NOT EXISTS "user" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"name" text,
 	"phone" text,
-	"email" text,
+	"email" text NOT NULL,
 	"password" text,
 	"vendor_id" uuid,
 	"role_id" uuid NOT NULL,
@@ -197,14 +237,99 @@ CREATE TABLE IF NOT EXISTS "vendor" (
 	"register" text NOT NULL,
 	"phone_number" text NOT NULL,
 	"email" text NOT NULL,
+	"balance" integer DEFAULT 0 NOT NULL,
 	"address_id" uuid NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "wallet" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"vendor_id" uuid NOT NULL,
-	"balance" integer NOT NULL
-);
+DO $$ BEGIN
+ ALTER TABLE "card" ADD CONSTRAINT "card_vendor_id_vendor_id_fk" FOREIGN KEY ("vendor_id") REFERENCES "public"."vendor"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "card" ADD CONSTRAINT "card_driver_id_driver_id_fk" FOREIGN KEY ("driver_id") REFERENCES "public"."driver"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "card_request" ADD CONSTRAINT "card_request_vendor_id_vendor_id_fk" FOREIGN KEY ("vendor_id") REFERENCES "public"."vendor"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "card_request" ADD CONSTRAINT "card_request_requested_user_id_user_id_fk" FOREIGN KEY ("requested_user_id") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "card_transfer_log" ADD CONSTRAINT "card_transfer_log_card_id_card_id_fk" FOREIGN KEY ("card_id") REFERENCES "public"."card"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "card_transfer_log" ADD CONSTRAINT "card_transfer_log_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "card_transfer_log" ADD CONSTRAINT "card_transfer_log_from_vendor_id_vendor_id_fk" FOREIGN KEY ("from_vendor_id") REFERENCES "public"."vendor"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "card_transfer_log" ADD CONSTRAINT "card_transfer_log_to_vendor_id_vendor_id_fk" FOREIGN KEY ("to_vendor_id") REFERENCES "public"."vendor"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "card_transfer_log" ADD CONSTRAINT "card_transfer_log_from_driver_id_driver_id_fk" FOREIGN KEY ("from_driver_id") REFERENCES "public"."driver"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "card_transfer_log" ADD CONSTRAINT "card_transfer_log_to_driver_id_driver_id_fk" FOREIGN KEY ("to_driver_id") REFERENCES "public"."driver"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "product_balance" ADD CONSTRAINT "product_balance_card_id_card_id_fk" FOREIGN KEY ("card_id") REFERENCES "public"."card"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "statement" ADD CONSTRAINT "statement_card_id_card_id_fk" FOREIGN KEY ("card_id") REFERENCES "public"."card"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "statement" ADD CONSTRAINT "statement_vendor_id_vendor_id_fk" FOREIGN KEY ("vendor_id") REFERENCES "public"."vendor"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "statement" ADD CONSTRAINT "statement_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "driver" ADD CONSTRAINT "driver_vendor_id_vendor_id_fk" FOREIGN KEY ("vendor_id") REFERENCES "public"."vendor"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "password_reset_token" ADD CONSTRAINT "password_reset_token_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;
@@ -214,6 +339,36 @@ END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "session" ADD CONSTRAINT "session_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "user" ADD CONSTRAINT "user_vendor_id_vendor_id_fk" FOREIGN KEY ("vendor_id") REFERENCES "public"."vendor"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "user" ADD CONSTRAINT "user_role_id_role_id_fk" FOREIGN KEY ("role_id") REFERENCES "public"."role"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "contract" ADD CONSTRAINT "contract_vendor_id_vendor_id_fk" FOREIGN KEY ("vendor_id") REFERENCES "public"."vendor"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "payment_date_each_month" ADD CONSTRAINT "payment_date_each_month_payment_plan_id_payment_plan_id_fk" FOREIGN KEY ("payment_plan_id") REFERENCES "public"."payment_plan"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "payment_plan" ADD CONSTRAINT "payment_plan_contract_id_contract_id_fk" FOREIGN KEY ("contract_id") REFERENCES "public"."contract"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
