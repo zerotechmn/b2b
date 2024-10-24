@@ -88,14 +88,6 @@ export async function Dashboard({ children }: Props) {
                   <span className="text-secondary">Шунхлай</span>
                 </Link>
 
-                {/* {menus.map((menu) => (
-                  <SheetMenu
-                    key={menu.href}
-                    href={menu.href}
-                    title={menu.title}
-                    Icon={menu.Icon}
-                  />
-                ))} */}
                 <SheetMenu />
               </nav>
 

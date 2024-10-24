@@ -7,6 +7,7 @@ import {
   card,
   cardTransferLog,
   convertPgEnum,
+  driver,
   statement,
   statementTypeEnum,
   transferActionEnum,
@@ -40,6 +41,14 @@ const driverCardRoute = new Hono()
       return c.json({ cards: cardList, message: "Success" }, 200);
     }
   )
+  .get("/phone/:phone", async (c) => {
+    const phone = c.req.param("phone");
+    const dbDriver = await db.query.driver.findFirst({
+      where: eq(driver.phone, phone),
+    });
+    if (!dbDriver) return c.json({ error: "Driver not found" }, 404);
+    return c.json({ driver: dbDriver }, 200);
+  })
   .post("/create", zValidator("json", z_createDriverCard), async (c) => {
     const body = c.req.valid("json");
 
