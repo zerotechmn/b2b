@@ -6,11 +6,10 @@ import { verify } from "hono/jwt";
 import { z } from "zod";
 import { generateAccessToken, generateBase62Token } from "../../../../lib/jwt";
 import { db } from "../../database/client";
-import { user } from "../../database/schema";
+import { passwordResetToken, user } from "../../database/schema";
 import { comparePassword, hashPassword } from "../../tools/crypt";
-import { passwordResetToken } from "../../database/schema";
+import { AuthUser, getAuthUser } from "./auth-user";
 import login from "./login";
-import { getAuthUser } from "./auth-user";
 
 const authRoute = new Hono()
   .post(
@@ -78,7 +77,7 @@ const authRoute = new Hono()
       );
 
       return c.json(
-        { accessToken: await generateAccessToken({ ...rest }) },
+        { accessToken: await generateAccessToken({ ...(rest as AuthUser) }) },
         200
       );
     }

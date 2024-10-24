@@ -1,10 +1,10 @@
 import { zValidator } from "@hono/zod-validator";
+import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
 import { db } from "../../database/client";
-import { address, contract, vendor, wallet } from "../../database/schema";
+import { address, contract, vendor } from "../../database/schema";
 import createContract, { z_contract } from "./create-contract";
-import { eq } from "drizzle-orm";
 
 export const z_vendorCreateSchema = z.object({
   name: z.string().min(2, "Нэр хамгийн багадаа 2 тэмдэгтээс их байна"),
@@ -82,14 +82,6 @@ const vendorRoute = new Hono()
         })
         .returning();
 
-      await tx
-        .insert(wallet)
-        .values({
-          balance: 0,
-          vendorId: newVendor[0].id,
-        })
-        .returning();
-
       await createContract({ vendorId: newVendor[0].id, ...contractData });
 
       return newVendor[0];
@@ -131,7 +123,6 @@ const vendorRoute = new Hono()
       with: {
         contract: true,
         address: true,
-        wallet: true,
         cards: true,
       },
     });
@@ -153,7 +144,6 @@ const vendorRoute = new Hono()
         with: {
           contract: true,
           address: true,
-          wallet: true,
           cards: true,
         },
       });
@@ -203,15 +193,6 @@ const vendorRoute = new Hono()
             addressId: updatedAddress[0].id,
           })
           .where(eq(vendor.id, vendorId))
-          .returning();
-
-        await tx
-          .update(wallet)
-          .set({
-            balance: 0,
-            vendorId: updatedVendor[0].id,
-          })
-          .where(eq(wallet.vendorId, updatedVendor[0].id))
           .returning();
 
         await tx

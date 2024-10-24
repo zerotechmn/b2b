@@ -1,7 +1,7 @@
 import { Context, Next } from "hono";
 import { jwt, sign } from "hono/jwt";
 import { ContextType } from "../app/api/[[...route]]/route";
-import { AuthUser } from "@/app/api/[[...route]]/auth-route/login";
+import { AuthUser } from "@/app/api/[[...route]]/auth-route/auth-user";
 
 export function jwtMiddleware(c: Context<ContextType>, next: Next) {
   const mw = jwt({

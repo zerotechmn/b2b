@@ -29,7 +29,7 @@ export const authConfig = {
 
         const data = await response.json();
 
-        return { ...data.user, accessToken: data.accessToken };
+        return { ...data.user, accessToken: data.accessToken } as any;
       },
     }),
   ],

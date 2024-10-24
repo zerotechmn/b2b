@@ -109,6 +109,10 @@ export const cardRequest = pgTable("card_request", {
   requestedCardCount: integer("requested_amount").notNull(),
   status: cardRequestStatusEnum("status").notNull(),
   requestedAt: text("requested_at").notNull(),
+  fulfilledCardIds: uuid("fulfilled_card_ids")
+    .references(() => card.id)
+    .array()
+    .notNull(),
 
   createdAt: timestamp("created_at", {
     withTimezone: true,
@@ -124,23 +128,34 @@ export const cardRequest = pgTable("card_request", {
     .$defaultFn(() => new Date()),
 });
 
-export const cardRequestRelations = relations(cardRequest, ({ one }) => ({
+export const cardRequestRelations = relations(cardRequest, ({ one, many }) => ({
   vendor: one(vendor, {
     fields: [cardRequest.vendorId],
     references: [vendor.id],
   }),
+  fulfilledCards: many(card),
 }));
+
+export const statementTypeEnum = pgEnum("statement_type_enum", [
+  "CHARGE",
+  "WITHDRAW",
+  "PURCHASE",
+  "BONUS",
+]);
 
 export const statement = pgTable("statement", {
   id: uuid("id").primaryKey().defaultRandom(),
   cardId: uuid("card_id")
     .notNull()
     .references(() => card.id),
-  amount: text("amount").notNull(),
+  amount: integer("amount").notNull(),
   from: integer("from").notNull(),
   to: integer("to").notNull(),
-  details: text("details").notNull(),
-  stationId: uuid("station_id").notNull(),
+  details: text("details").notNull().default(""),
+  statementTypeEnum: statementTypeEnum("type").notNull(),
+  stationId: uuid("station_id"),
+  vendorId: uuid("vendor_id").references(() => vendor.id),
+  userId: uuid("user_id").references(() => user.id),
 
   createdAt: timestamp("created_at", {
     withTimezone: true,
