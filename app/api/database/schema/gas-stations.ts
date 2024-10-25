@@ -20,7 +20,7 @@ export const product = pgTable("product", {
     .$defaultFn(() => new Date()),
 });
 
-export const gas_station = pgTable("gas_station", {
+export const gasStation = pgTable("gas_station", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: text("name"),
   shtsCode: text("shts_code"),
@@ -34,8 +34,8 @@ export const gas_station = pgTable("gas_station", {
 });
 
 export const productRelations = relations(product, ({ one }) => ({
-  gas_station: one(gas_station, {
+  gasStation: one(gasStation, {
     fields: [product.shtsCode],
-    references: [gas_station.shtsCode],
+    references: [gasStation.shtsCode],
   }),
 }));
