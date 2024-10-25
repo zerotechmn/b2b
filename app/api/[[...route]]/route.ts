@@ -8,6 +8,7 @@ import authRoute from "./auth-route";
 import usersRoute from "./user-route";
 import vendorRoute from "./vendor-route";
 import driverCardRoute from "./driver-card-route";
+import productRoute from "./product-route";
 
 // Can run on the edge if we need to.
 // export const runtime = "edge";
@@ -36,11 +37,13 @@ app.use(
 app.use("/user/*", jwtMiddleware);
 app.use("/vendor/*", jwtMiddleware);
 app.use("/driver-card/*", jwtMiddleware);
+app.use("/product/*", jwtMiddleware);
 
 const route = app
   .route("/authenticate", authRoute)
   .route("/user", usersRoute)
   .route("/vendor", vendorRoute)
+  .route("/product", productRoute)
   .route("/driver-card", driverCardRoute)
   .get("/health", (c) => {
     return c.json({

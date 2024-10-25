@@ -7,6 +7,7 @@ export * from "./user";
 export * from "./vendor";
 export * from "./driver-card";
 export * from "./driver";
+export * from "./gas-stations";
 
 export function convertPgEnum<T extends [string, ...string[]]>(
   pgEnum: PgEnum<T>
